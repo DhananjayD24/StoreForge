@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { useProducts } from "../../context/ProductContext";
+import { usePlanGate } from "../../hooks/usePlanGate";
+import UpgradeModal from "../../components/ui/UpgardeModel";
 
 function Products() {
   const { products, addProduct, deleteProduct, updateStock } = useProducts();
   const [showForm, setShowForm] = useState(false);
+  const { canAddProduct, plan } = usePlanGate();
+  const [showUpgrade, setShowUpgrade] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -23,21 +28,53 @@ function Products() {
     setFormData({ name: "", price: "", category: "", stock: "" });
   };
 
+  const productLimitReached = !canAddProduct(products.length);
+
   return (
     <div className="space-y-8">
-
       {/* HEADER */}
+      {/* 
+  Product Management Header
+  Includes SaaS feature gating + upgrade trigger
+*/}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <h1 className="text-2xl font-bold">
-          Product Management
-        </h1>
+        {/* Page Title */}
+        <h1 className="text-2xl font-bold">Product Management</h1>
 
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-gray-900 text-white rounded-lg w-full sm:w-auto"
-        >
-          + Add Product
-        </button>
+        {/* Right Section */}
+        <div className="flex flex-col items-start sm:items-end">
+          {/* Add Product / Upgrade Button */}
+          <button
+            onClick={() => {
+              // If plan limit reached → open upgrade modal
+              if (productLimitReached) {
+                setShowUpgrade(true);
+                return;
+              }
+
+              // TODO: existing add product logic here
+            }}
+            className={`px-4 py-2 rounded text-white transition ${
+              productLimitReached
+                ? "bg-purple-600 hover:bg-purple-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {productLimitReached ? "Upgrade Plan" : "Add Product"}
+          </button>
+
+          {/* Upgrade Warning Message */}
+          {productLimitReached && (
+            <p className="text-sm text-red-500 mt-2">
+              Free plan allows only 10 products. Upgrade required.
+            </p>
+          )}
+
+          <UpgradeModal
+            open={showUpgrade}
+            onClose={() => setShowUpgrade(false)}
+          />
+        </div>
       </div>
 
       {/* ADD PRODUCT FORM */}
@@ -52,9 +89,7 @@ function Products() {
             required
             className="border p-3 rounded-lg dark:bg-gray-700"
             value={formData.name}
-            onChange={(e) =>
-              setFormData({ ...formData, name: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
 
           <input
@@ -114,7 +149,10 @@ function Products() {
 
           <tbody className="divide-y dark:divide-gray-700">
             {products.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <tr
+                key={product.id}
+                className="hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
                 <td className="py-3 font-medium">{product.name}</td>
                 <td>₹ {product.price}</td>
                 <td>{product.category}</td>
@@ -128,9 +166,7 @@ function Products() {
                     className="w-16 border p-1 rounded"
                   />
                   {product.stock < 5 && (
-                    <span className="ml-2 text-xs text-red-500">
-                      Low
-                    </span>
+                    <span className="ml-2 text-xs text-red-500">Low</span>
                   )}
                 </td>
                 <td>
@@ -155,9 +191,7 @@ function Products() {
             className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm space-y-3"
           >
             <div className="flex justify-between">
-              <h3 className="font-semibold">
-                {product.name}
-              </h3>
+              <h3 className="font-semibold">{product.name}</h3>
               <button
                 onClick={() => deleteProduct(product.id)}
                 className="text-red-500 text-sm"
@@ -170,9 +204,7 @@ function Products() {
               Category: {product.category}
             </p>
 
-            <p className="text-sm">
-              Price: ₹ {product.price}
-            </p>
+            <p className="text-sm">Price: ₹ {product.price}</p>
 
             <div className="flex items-center gap-3">
               <span className="text-sm">Stock:</span>
@@ -185,15 +217,12 @@ function Products() {
                 className="w-20 border p-1 rounded"
               />
               {product.stock < 5 && (
-                <span className="text-xs text-red-500">
-                  Low
-                </span>
+                <span className="text-xs text-red-500">Low</span>
               )}
             </div>
           </div>
         ))}
       </div>
-
     </div>
   );
 }

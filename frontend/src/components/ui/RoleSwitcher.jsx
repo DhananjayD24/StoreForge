@@ -1,29 +1,59 @@
-// RoleSwitcher.jsx
-// Adds auto-navigation based on selected role
+/**
+ * RoleSwitcher.jsx
+ *
+ * Dev-only role simulator.
+ * Fixes redirect conflict with ProtectedRoute by
+ * navigating AFTER role state updates.
+ */
 
 import { useRole } from "../../context/RoleContext";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function RoleSwitcher() {
   const { role, setRole } = useRole();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-  const selectedRole = e.target.value;
-  setRole(selectedRole);
+  // temporary state to track requested role change
+  const [pendingRole, setPendingRole] = useState(null);
 
-  if (selectedRole === "storeAdmin") {
-    navigate("/store");
-  } else if (selectedRole === "superAdmin") {
-    navigate("/admin");
-  } else {
-    navigate("/");
-  }
-};
+  /**
+   * Only update role here.
+   * Navigation handled later in useEffect.
+   */
+  const handleChange = (e) => {
+    const selectedRole = e.target.value;
+    setPendingRole(selectedRole);
+    setRole(selectedRole);
+  };
+
+  /**
+   * Navigate AFTER role successfully updates.
+   * Prevents ProtectedRoute redirect conflict.
+   */
+  useEffect(() => {
+    if (!pendingRole) return;
+
+    switch (pendingRole) {
+      case "storeAdmin":
+        navigate("/store");
+        break;
+
+      case "superAdmin":
+        navigate("/admin/dashboard");
+        break;
+
+      default:
+        navigate("/");
+    }
+
+    setPendingRole(null);
+  }, [role]); // runs AFTER role updates
 
   return (
     <div className="fixed bottom-4 right-4 bg-white dark:bg-gray-800 shadow-lg p-4 rounded-xl">
       <p className="text-xs mb-2 font-semibold">Switch Role</p>
+
       <select
         value={role}
         onChange={handleChange}

@@ -15,6 +15,10 @@ import OrderHistory from "../pages/customer/OrderHistory";
 import StoreDashboard from "../pages/storeAdmin/Dashboard";
 import Products from "../pages/storeAdmin/Products";
 import Orders from "../pages/storeAdmin/Orders";
+import Tenants from "../pages/superAdmin/Tenants";
+import CreateTenant from "../pages/superAdmin/CreateTenant";
+import TenantDetails from "../pages/superAdmin/TenantDetails";
+import Dashboard from "../pages/superAdmin/Dashboard";
 
 function AppRoutes() {
   return (
@@ -53,7 +57,11 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="dashboard" element={<h1>Super Admin Dashboard</h1>} />
+        <Route index element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="tenants" element={<Tenants />} />
+        <Route path="create-tenant" element={<CreateTenant />} />
+        <Route path="tenant/:id" element={<TenantDetails />} />
       </Route>
     </Routes>
   );
