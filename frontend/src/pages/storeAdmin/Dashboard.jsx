@@ -6,6 +6,8 @@ import useRevenueSimulator from "../../hooks/UseRevenueSimulator";
 import StatCard from "../../components/admin/StatCard";
 import { products } from "../../data/mockData";
 import { useOrder } from "../../context/OrderContext";
+import RevenueChart from "../../components/admin/RevenueChart";
+import OrdersChart from "../../components/admin/OrdersChart";
 
 function Dashboard() {
   const { revenue, orders } = useOrder();
@@ -16,12 +18,9 @@ function Dashboard() {
 
   return (
     <div className="space-y-12">
-
       {/* ===== PAGE HEADER ===== */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">
-          Dashboard Overview
-        </h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Dashboard Overview</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
           Monitor your store performance in real time.
         </p>
@@ -29,35 +28,28 @@ function Dashboard() {
 
       {/* ===== KPI GRID ===== */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-
         <StatCard
           title="Total Revenue"
           value={`₹ ${revenue.toLocaleString()}`}
           subtitle="+ Live updates"
         />
 
-        <StatCard
-          title="Total Orders"
-          value={totalOrders}
-        />
+        <StatCard title="Total Orders" value={totalOrders} />
 
-        <StatCard
-          title="Customers"
-          value={totalCustomers}
-        />
+        <StatCard title="Customers" value={totalCustomers} />
 
-        <StatCard
-          title="Products"
-          value={totalProducts}
-        />
+        <StatCard title="Products" value={totalProducts} />
+      </div>
 
+      {/* ===== Analytics Charts ===== */}
+      <div className="grid lg:grid-cols-2 gap-6 mt-8">
+        <RevenueChart />
+        <OrdersChart />
       </div>
 
       {/* ===== RECENT ORDERS ===== */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold mb-6">
-          Recent Orders
-        </h2>
+        <h2 className="text-lg font-semibold mb-6">Recent Orders</h2>
 
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -113,7 +105,6 @@ function Dashboard() {
             ))}
         </ul>
       </div>
-
     </div>
   );
 }

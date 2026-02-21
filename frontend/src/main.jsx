@@ -9,6 +9,8 @@ import { CartProvider } from "./context/CartContext";
 import { OrderProvider } from "./context/OrderContext";
 import { ProductProvider } from "./context/ProductContext";
 import { TenantProvider } from "./context/TenantContext";
+import { AnalyticsProvider } from "./context/AnalyticsContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -19,7 +21,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <OrderProvider>
               <ProductProvider>
                 <TenantProvider>
-                  <App />
+                  <AnalyticsProvider>
+                    <NotificationProvider>
+                      <App />
+                    </NotificationProvider>
+                  </AnalyticsProvider> 
                 </TenantProvider>
               </ProductProvider>
             </OrderProvider>
