@@ -10,6 +10,8 @@ import authRoutes from "./routes/authroutes.js";
 import tenantRoutes from "./routes/tenantRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 const app = express();
 
@@ -30,5 +32,7 @@ app.get("/", (req, res) => {
 app.use("/api/tenants", tenantRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 export default app;

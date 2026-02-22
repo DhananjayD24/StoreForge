@@ -8,6 +8,8 @@
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import { getIO } from "../config/socket.js";
+import Notification from "../models/Notification.js";
+import User from "../models/User.js";
 
 // ==============================
 // Create Order (Customer)
@@ -72,18 +74,45 @@ export const createOrder = async (req, res) => {
       items: processedItems,
       totalAmount,
     });
+
+    /**
+     * After order creation:
+     * 1. Save persistent notification
+     * 2. Emit realtime event to tenant room
+     */
+
     // ==============================
-// Emit Real-Time Notification
-// ==============================
+    // Create Persistent Notification
+    // ==============================
 
-const io = getIO();
+    // find store admin of this tenant
+    const storeAdmin = await User.findOne({
+      tenantId,
+      role: "storeAdmin",
+    });
 
-// notify store admin room
-io.to(tenantId.toString()).emit("new-order", {
-  message: "New order received",
-  orderId: order._id,
-  totalAmount: order.totalAmount,
-});
+    if (storeAdmin) {
+      const notification = await Notification.create({
+        userId: storeAdmin._id,
+        tenantId,
+        message: "New order received",
+        type: "success",
+      });
+
+      // ==============================
+      // Emit Realtime Event
+      // ==============================
+
+      const io = getIO();
+
+      io.to(tenantId.toString()).emit("order-created", {
+        notification,
+        order: {
+          id: order._id,
+          totalAmount: order.totalAmount,
+        },
+      });
+    }
 
     res.status(201).json(order);
   } catch (error) {
