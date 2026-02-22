@@ -8,6 +8,8 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authroutes.js";
 import tenantRoutes from "./routes/tenantRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 const app = express();
 
@@ -26,5 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/tenants", tenantRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 
 export default app;
