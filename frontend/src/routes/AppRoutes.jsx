@@ -19,6 +19,10 @@ import Tenants from "../pages/superAdmin/Tenants";
 import CreateTenant from "../pages/superAdmin/CreateTenant";
 import TenantDetails from "../pages/superAdmin/TenantDetails";
 import Dashboard from "../pages/superAdmin/Dashboard";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import Plans from "../pages/storeSetup/Plans";  
+import CreateStore from "../pages/storeSetup/createStore";
 
 function AppRoutes() {
   return (
@@ -63,6 +67,11 @@ function AppRoutes() {
         <Route path="create-tenant" element={<CreateTenant />} />
         <Route path="tenant/:id" element={<TenantDetails />} />
       </Route>
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/plans" element={<Plans />} />
+      <Route path="/create-store/:planId" element={<CreateStore />} />
     </Routes>
   );
 }

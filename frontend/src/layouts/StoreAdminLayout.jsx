@@ -20,6 +20,8 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { useOrder } from "../context/OrderContext";
 import { useNotifications } from "../context/NotificationContext";
 import NotificationDropdown from "../components/ui/NotificationDropdown";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function StoreAdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,6 +30,13 @@ function StoreAdminLayout() {
   const { orders } = useOrder();
   const { unreadCount } = useNotifications();
   const [showNotifications, setShowNotifications] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   /* ===============================
      Navigation Items
@@ -184,7 +193,7 @@ function StoreAdminLayout() {
 
             {/* Logout */}
             <button
-              onClick={() => alert("Logout logic later")}
+              onClick={handleLogout}
               className="text-sm px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-black transition"
             >
               Logout
