@@ -26,13 +26,6 @@ const tenantSchema = new mongoose.Schema(
       required: true,
     },
 
-    // subscription plan
-    plan: {
-      type: String,
-      enum: ["Free", "Pro", "Enterprise"],
-      default: "Free",
-    },
-
     // tenant lifecycle status
     status: {
       type: String,
