@@ -8,6 +8,7 @@ import { products } from "../../data/mockData";
 import { useOrder } from "../../context/OrderContext";
 import RevenueChart from "../../components/admin/RevenueChart";
 import OrdersChart from "../../components/admin/OrdersChart";
+import { FRONTEND_BASE_URL } from "../../api/api";
 
 function Dashboard() {
   const { revenue, orders } = useOrder();
@@ -15,6 +16,7 @@ function Dashboard() {
   const totalOrders = 124;
   const totalCustomers = 89;
   const totalProducts = products.length;
+  const storeSlug = localStorage.getItem("storeSlug");
 
   return (
     <div className="space-y-12">
@@ -40,6 +42,28 @@ function Dashboard() {
 
         <StatCard title="Products" value={totalProducts} />
       </div>
+
+      <div className="mt-4">
+        Your Store Link:
+        <a
+          href={`${FRONTEND_BASE_URL}/store/${storeSlug}`}
+          className="text-blue-600 ml-2"
+          target="_blank"
+          rel="noreferrer"
+        >
+          {FRONTEND_BASE_URL}/store/{storeSlug}
+        </a>
+      </div>
+      <button
+        onClick={() =>
+          navigator.clipboard.writeText(
+            `${FRONTEND_BASE_URL}/store/${storeSlug}`,
+          )
+        }
+        className="ml-2 bg-gray-200 px-2 py-1 rounded"
+      >
+        Copy
+      </button>
 
       {/* ===== Analytics Charts ===== */}
       <div className="grid lg:grid-cols-2 gap-6 mt-8">

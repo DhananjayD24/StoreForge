@@ -19,6 +19,13 @@ const tenantSchema = new mongoose.Schema(
       required: true,
     },
 
+    // store URL slug (used for public store link)
+    storeSlug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     // owner of the store
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,

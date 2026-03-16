@@ -13,12 +13,13 @@ export default function CreateStore() {
     e.preventDefault();
 
     try {
-      await api.post("/tenants/create-store", {
+      const res = await api.post("/tenants/create-store", {
         storeName,
         planId,
       });
 
-      alert("Store created!");
+      localStorage.setItem("tenantId", res.data.tenantId);
+      localStorage.setItem("storeSlug", res.data.storeSlug);
 
       navigate("/store");
     } catch {

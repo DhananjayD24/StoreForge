@@ -59,10 +59,27 @@ export const createStoreSelfService = async (req, res) => {
     }
 
     // ==============================
+    // Generate Store Slug
+    // ==============================
+
+    const storeSlug = storeName.toLowerCase().trim().replace(/\s+/g, "-");
+
+    // ensure slug is unique
+    let uniqueSlug = storeSlug;
+    let counter = 1;
+
+    while (await Tenant.findOne({ storeSlug: uniqueSlug })) {
+      uniqueSlug = `${storeSlug}-${counter}`;
+      counter++;
+    }
+
+    // ==============================
     // Create Tenant
     // ==============================
+
     const tenant = await Tenant.create({
       storeName,
+      storeSlug: uniqueSlug,
       ownerId: user._id,
     });
 
@@ -112,7 +129,8 @@ export const createStoreSelfService = async (req, res) => {
 
     res.status(201).json({
       message: "Store created successfully",
-      tenant,
+      tenantId: tenant._id,
+      storeSlug: tenant.storeSlug,
       token,
       role: user.role,
     });
