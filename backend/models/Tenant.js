@@ -1,16 +1,4 @@
-/**
- * File: Tenant.js
- * Purpose:
- * Defines Tenant (Store) schema.
- * Each tenant represents an independent store
- * in the StoreForge multi-tenant SaaS system.
- */
-
 import mongoose from "mongoose";
-
-// ==============================
-// Tenant Schema
-// ==============================
 
 const tenantSchema = new mongoose.Schema(
   {
@@ -19,21 +7,24 @@ const tenantSchema = new mongoose.Schema(
       required: true,
     },
 
-    // store URL slug (used for public store link)
     storeSlug: {
       type: String,
       required: true,
       unique: true,
     },
 
-    // owner of the store
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
-    // tenant lifecycle status
+    // store hero description
+    tagline: {
+      type: String,
+      default: "Welcome to our store",
+    },
+
     status: {
       type: String,
       enum: ["active", "suspended"],

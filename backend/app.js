@@ -14,6 +14,7 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import storeRoutes from "./routes/storeRoutes.js"
 
 const app = express();
 
@@ -38,5 +39,6 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/subscription", subscriptionRoutes);
+app.use("/api/store", storeRoutes)
 
 export default app;

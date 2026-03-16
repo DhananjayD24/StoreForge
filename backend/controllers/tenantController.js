@@ -81,6 +81,7 @@ export const createStoreSelfService = async (req, res) => {
       storeName,
       storeSlug: uniqueSlug,
       ownerId: user._id,
+      tagline: `Welcome to ${storeName}`,
     });
 
     // ==============================

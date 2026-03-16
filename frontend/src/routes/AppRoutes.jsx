@@ -21,8 +21,9 @@ import TenantDetails from "../pages/superAdmin/TenantDetails";
 import Dashboard from "../pages/superAdmin/Dashboard";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Plans from "../pages/storeSetup/Plans";  
+import Plans from "../pages/storeSetup/Plans";
 import CreateStore from "../pages/storeSetup/createStore";
+import StoreFront from "../pages/customer/storeFront";
 
 function AppRoutes() {
   return (
@@ -72,6 +73,16 @@ function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/plans" element={<Plans />} />
       <Route path="/create-store/:planId" element={<CreateStore />} />
+
+      <Route path="/store/:slug" element={<CustomerLayout />}>
+        <Route index element={<Home />} />
+        <Route path="product/:id" element={<ProductDetails />} />
+        <Route path="cart" element={<Cart />} />
+        <Route path="checkout" element={<Checkout />} />
+        <Route path="order-success" element={<OrderSuccess />} />
+        <Route path="orders" element={<OrderHistory />} />
+      </Route>
+      
     </Routes>
   );
 }
