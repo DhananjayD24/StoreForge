@@ -17,7 +17,7 @@ export const createProduct = async (req, res) => {
 
     const { name, price, description, stock, category } = req.body;
 
-    // Cloudinary URLs
+    // Cloudinary already uploaded images
     const imageUrls = req.files.map(file => file.path);
 
     const product = await Product.create({
@@ -111,9 +111,29 @@ export const updateProduct = async (req, res) => {
 // ==============================
 
 export const deleteProduct = async (req, res) => {
+  try {
 
-  await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findById(req.params.id);
 
-  res.json({ message: "Product deleted" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
+    // Delete images from Cloudinary
+    for (const imageUrl of product.images) {
+
+      const parts = imageUrl.split("/");
+      const filename = parts[parts.length - 1];
+      const publicId = "storeforge_products/" + filename.split(".")[0];
+
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    await Product.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "Product deleted" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
