@@ -6,6 +6,7 @@
  */
 
 import Product from "../models/Product.js";
+import cloudinary from "../config/cloudinary.js";
 
 // ==============================
 // Create Product
@@ -16,7 +17,8 @@ export const createProduct = async (req, res) => {
 
     const { name, price, description, stock, category } = req.body;
 
-    const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
+    // Cloudinary URLs
+    const imageUrls = req.files.map(file => file.path);
 
     const product = await Product.create({
       tenantId: req.user.tenantId,
@@ -25,7 +27,7 @@ export const createProduct = async (req, res) => {
       description,
       stock,
       category,
-      images: imagePaths,
+      images: imageUrls
     });
 
     res.status(201).json(product);
@@ -54,18 +56,54 @@ export const getMyProducts = async (req, res) => {
 // ==============================
 
 export const updateProduct = async (req, res) => {
+  try {
 
-  const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id);
 
-  if (!product) {
-    return res.status(404).json({ message: "Product not found" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const { name, price, description, stock, category } = req.body;
+
+    product.name = name ?? product.name;
+    product.price = price ?? product.price;
+    product.description = description ?? product.description;
+    product.stock = stock ?? product.stock;
+    product.category = category ?? product.category;
+
+    // If new images uploaded
+    if (req.files && req.files.length > 0) {
+
+      // =============================
+      // Delete old images from Cloudinary
+      // =============================
+
+      for (const imageUrl of product.images) {
+
+        const parts = imageUrl.split("/");
+        const filename = parts[parts.length - 1];
+        const publicId = "storeforge_products/" + filename.split(".")[0];
+
+        await cloudinary.uploader.destroy(publicId);
+
+      }
+
+      // =============================
+      // Save new images
+      // =============================
+
+      product.images = req.files.map(file => file.path);
+
+    }
+
+    await product.save();
+
+    res.json(product);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-
-  Object.assign(product, req.body);
-
-  await product.save();
-
-  res.json(product);
 };
 
 // ==============================

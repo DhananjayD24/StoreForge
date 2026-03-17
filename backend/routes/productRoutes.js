@@ -36,6 +36,7 @@ router.put(
   "/:id",
   protect,
   authorizeRoles("storeAdmin"),
+  upload.array("images", 5),
   updateProduct
 );
 
