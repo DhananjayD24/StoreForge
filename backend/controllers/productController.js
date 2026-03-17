@@ -13,25 +13,23 @@ import Product from "../models/Product.js";
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, stock } = req.body;
 
-    // tenantId extracted from JWT
-    const tenantId = req.tenantId;
+    const { name, price, description, stock, category } = req.body;
 
-    if (!tenantId)
-      return res.status(403).json({
-        message: "Store not found. Create store first.",
-      });
+    const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
     const product = await Product.create({
-      tenantId,
+      tenantId: req.user.tenantId,
       name,
-      description,
       price,
+      description,
       stock,
+      category,
+      images: imagePaths,
     });
 
     res.status(201).json(product);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -41,17 +39,14 @@ export const createProduct = async (req, res) => {
 // Get Products (Tenant Scoped)
 // ==============================
 
-export const getProducts = async (req, res) => {
-  try {
-    const tenantId = req.tenantId;
+export const getMyProducts = async (req, res) => {
 
-    // 🔥 CORE SAAS LINE
-    const products = await Product.find({ tenantId });
+  const products = await Product.find({
+    tenantId: req.user.tenantId,
+  });
 
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  res.json(products);
+
 };
 
 // ==============================
@@ -59,19 +54,18 @@ export const getProducts = async (req, res) => {
 // ==============================
 
 export const updateProduct = async (req, res) => {
-  try {
-    const tenantId = req.tenantId;
 
-    const product = await Product.findOneAndUpdate(
-      { _id: req.params.id, tenantId }, // prevents cross-tenant edits
-      req.body,
-      { new: true }
-    );
+  const product = await Product.findById(req.params.id);
 
-    res.json(product);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
   }
+
+  Object.assign(product, req.body);
+
+  await product.save();
+
+  res.json(product);
 };
 
 // ==============================
@@ -79,16 +73,9 @@ export const updateProduct = async (req, res) => {
 // ==============================
 
 export const deleteProduct = async (req, res) => {
-  try {
-    const tenantId = req.tenantId;
 
-    await Product.findOneAndDelete({
-      _id: req.params.id,
-      tenantId,
-    });
+  await Product.findByIdAndDelete(req.params.id);
 
-    res.json({ message: "Product deleted" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  res.json({ message: "Product deleted" });
+
 };

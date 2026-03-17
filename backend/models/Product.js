@@ -1,20 +1,7 @@
-/**
- * File: Product.js
- * Purpose:
- * Defines product schema.
- * Each product belongs to a tenant (store).
- * Enables multi-tenant data isolation.
- */
-
 import mongoose from "mongoose";
-
-// ==============================
-// Product Schema
-// ==============================
 
 const productSchema = new mongoose.Schema(
   {
-    // SaaS Isolation Key
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tenant",
@@ -37,6 +24,14 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
+    category: String,
+
+    images: [
+      {
+        type: String, // image URL
+      },
+    ],
   },
   { timestamps: true }
 );

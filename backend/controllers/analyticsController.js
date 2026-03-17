@@ -1,24 +1,9 @@
-/**
- * File: analyticsController.js
- * Purpose:
- * Provides dashboard analytics using MongoDB aggregation.
- * Data is tenant-scoped for SaaS isolation.
- */
-
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 
-// ==============================
-// Get Store Dashboard Analytics
-// ==============================
-
 export const getDashboardAnalytics = async (req, res) => {
   try {
-    const tenantId = req.tenantId;
-
-    // ==============================
-    // Total Revenue + Orders
-    // ==============================
+    const tenantId = req.user.tenantId;
 
     const revenueData = await Order.aggregate([
       { $match: { tenantId } },
@@ -31,17 +16,7 @@ export const getDashboardAnalytics = async (req, res) => {
       },
     ]);
 
-    // ==============================
-    // Total Products
-    // ==============================
-
-    const totalProducts = await Product.countDocuments({
-      tenantId,
-    });
-
-    // ==============================
-    // Daily Revenue Chart
-    // ==============================
+    const totalProducts = await Product.countDocuments({ tenantId });
 
     const dailyRevenue = await Order.aggregate([
       { $match: { tenantId } },
@@ -58,11 +33,15 @@ export const getDashboardAnalytics = async (req, res) => {
         },
       },
       { $sort: { _id: 1 } },
+      {
+        $project: {
+          date: "$_id",
+          revenue: 1,
+          orders: 1,
+          _id: 0,
+        },
+      },
     ]);
-
-    // ==============================
-    // Recent Orders
-    // ==============================
 
     const recentOrders = await Order.find({ tenantId })
       .sort({ createdAt: -1 })
@@ -75,6 +54,7 @@ export const getDashboardAnalytics = async (req, res) => {
       dailyRevenue,
       recentOrders,
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

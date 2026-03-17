@@ -1,27 +1,50 @@
-/**
- * File: productRoutes.js
- * Purpose:
- * Defines product APIs restricted to authenticated users.
- */
-
 import express from "express";
-import {
-  createProduct,
-  getProducts,
-  updateProduct,
-  deleteProduct,
-} from "../controllers/productController.js";
+import { createProduct, updateProduct, deleteProduct, getMyProducts } from "../controllers/productController.js";
 
-import { protect } from "../middleware/authMiddleware.js";
+import {protect} from "../middleware/authMiddleware.js";
+import {authorizeRoles} from "../middleware/roleMiddleware.js";
+
+import { upload } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
-// all routes require login
-router.use(protect);
+/*
+================================================
+Store Admin Product Management
+================================================
+*/
 
-router.post("/", createProduct);
-router.get("/", getProducts);
-router.put("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
+// Create product with multiple images
+router.post(
+  "/",
+  protect,
+  authorizeRoles("storeAdmin"),
+  upload.array("images", 5),
+  createProduct
+);
+
+// Get products of logged-in store admin
+router.get(
+  "/my",
+  protect,
+  authorizeRoles("storeAdmin"),
+  getMyProducts
+);
+
+// Update product
+router.put(
+  "/:id",
+  protect,
+  authorizeRoles("storeAdmin"),
+  updateProduct
+);
+
+// Delete product
+router.delete(
+  "/:id",
+  protect,
+  authorizeRoles("storeAdmin"),
+  deleteProduct
+);
 
 export default router;
