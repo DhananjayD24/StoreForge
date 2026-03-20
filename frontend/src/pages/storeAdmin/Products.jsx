@@ -1,228 +1,122 @@
-import { useState } from "react";
-import { useProducts } from "../../context/ProductContext";
-import { usePlanGate } from "../../hooks/usePlanGate";
-import UpgradeModal from "../../components/ui/UpgardeModel";
+import { useEffect, useState } from "react";
+import api from "../../api/api";
+import AddProductModal from "../../components/admin/AddProductModal";
+import EditProductModal from "../../components/admin/EditProductModal";
 
 function Products() {
-  const { products, addProduct, deleteProduct, updateStock } = useProducts();
-  const [showForm, setShowForm] = useState(false);
-  const { canAddProduct, plan } = usePlanGate();
-  const [showUpgrade, setShowUpgrade] = useState(false);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    category: "",
-    stock: "",
-  });
+  const [products,setProducts] = useState([]);
+  const [showModal,setShowModal] = useState(false);
+  const [editingProduct,setEditingProduct] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    addProduct({
-      ...formData,
-      price: Number(formData.price),
-      stock: Number(formData.stock),
-      image: "https://via.placeholder.com/150",
-    });
-    setShowForm(false);
-    setFormData({ name: "", price: "", category: "", stock: "" });
+  const fetchProducts = async () => {
+    const res = await api.get("/products/my");
+    setProducts(res.data);
   };
 
-  const productLimitReached = !canAddProduct(products.length);
+  useEffect(()=>{
+    fetchProducts();
+  },[]);
+
+  const deleteProduct = async(id)=>{
+    if(!window.confirm("Delete this product?")) return;
+
+    await api.delete(`/products/${id}`);
+    fetchProducts();
+  };
 
   return (
     <div className="space-y-8">
-      {/* HEADER */}
-      {/* 
-  Product Management Header
-  Includes SaaS feature gating + upgrade trigger
-*/}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        {/* Page Title */}
-        <h1 className="text-2xl font-bold">Product Management</h1>
 
-        {/* Right Section */}
-        <div className="flex flex-col items-start sm:items-end">
-          {/* Add Product / Upgrade Button */}
-          <button
-            onClick={() => {
-              // If plan limit reached → open upgrade modal
-              if (productLimitReached) {
-                setShowUpgrade(true);
-                return;
-              }
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Products</h1>
 
-              // TODO: existing add product logic here
-            }}
-            className={`px-4 py-2 rounded text-white transition ${
-              productLimitReached
-                ? "bg-purple-600 hover:bg-purple-700"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
-          >
-            {productLimitReached ? "Upgrade Plan" : "Add Product"}
-          </button>
-
-          {/* Upgrade Warning Message */}
-          {productLimitReached && (
-            <p className="text-sm text-red-500 mt-2">
-              Free plan allows only 10 products. Upgrade required.
-            </p>
-          )}
-
-          <UpgradeModal
-            open={showUpgrade}
-            onClose={() => setShowUpgrade(false)}
-          />
-        </div>
+        <button
+          onClick={()=>setShowModal(true)}
+          className="bg-black text-white px-4 py-2 rounded-lg"
+        >
+          + Add Product
+        </button>
       </div>
 
-      {/* ADD PRODUCT FORM */}
-      {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4"
-        >
-          <input
-            type="text"
-            placeholder="Product Name"
-            required
-            className="border p-3 rounded-lg dark:bg-gray-700"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
+      {/* Table */}
 
-          <input
-            type="number"
-            placeholder="Price"
-            required
-            className="border p-3 rounded-lg dark:bg-gray-700"
-            value={formData.price}
-            onChange={(e) =>
-              setFormData({ ...formData, price: e.target.value })
-            }
-          />
+      <div className="bg-white rounded-xl shadow overflow-x-auto">
 
-          <input
-            type="text"
-            placeholder="Category"
-            required
-            className="border p-3 rounded-lg dark:bg-gray-700"
-            value={formData.category}
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
-          />
+        <table className="w-full text-left">
 
-          <input
-            type="number"
-            placeholder="Stock"
-            required
-            className="border p-3 rounded-lg dark:bg-gray-700"
-            value={formData.stock}
-            onChange={(e) =>
-              setFormData({ ...formData, stock: e.target.value })
-            }
-          />
-
-          <button
-            type="submit"
-            className="sm:col-span-2 bg-black text-white py-3 rounded-xl"
-          >
-            Save Product
-          </button>
-        </form>
-      )}
-
-      {/* ===== DESKTOP TABLE (md+) ===== */}
-      <div className="hidden md:block bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="text-left border-b dark:border-gray-700">
-              <th className="py-3">Name</th>
-              <th>Price</th>
-              <th>Category</th>
-              <th>Stock</th>
-              <th>Action</th>
+          <thead className="border-b">
+            <tr className="text-sm text-gray-600">
+              <th className="p-4">Image</th>
+              <th className="p-4">Name</th>
+              <th className="p-4">Price</th>
+              <th className="p-4">Stock</th>
+              <th className="p-4">Actions</th>
             </tr>
           </thead>
 
-          <tbody className="divide-y dark:divide-gray-700">
-            {products.map((product) => (
-              <tr
-                key={product.id}
-                className="hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                <td className="py-3 font-medium">{product.name}</td>
-                <td>₹ {product.price}</td>
-                <td>{product.category}</td>
-                <td>
-                  <input
-                    type="number"
-                    value={product.stock}
-                    onChange={(e) =>
-                      updateStock(product.id, Number(e.target.value))
-                    }
-                    className="w-16 border p-1 rounded"
-                  />
-                  {product.stock < 5 && (
-                    <span className="ml-2 text-xs text-red-500">Low</span>
-                  )}
+          <tbody>
+            {products.map(product => (
+
+              <tr key={product._id} className="border-b">
+
+                <td className="p-4">
+                  {product.images?.[0] &&
+                    <img
+                      src={product.images[0]}
+                      className="w-14 h-14 object-cover rounded"
+                    />
+                  }
                 </td>
-                <td>
+
+                <td className="p-4">{product.name}</td>
+                <td className="p-4">₹{product.price}</td>
+                <td className="p-4">{product.stock}</td>
+
+                <td className="p-4 space-x-3">
+
                   <button
-                    onClick={() => deleteProduct(product.id)}
-                    className="text-red-500 text-sm"
+                    className="text-blue-500"
+                    onClick={()=>setEditingProduct(product)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="text-red-500"
+                    onClick={()=>deleteProduct(product._id)}
                   >
                     Delete
                   </button>
+
                 </td>
+
               </tr>
+
             ))}
           </tbody>
+
         </table>
+
       </div>
 
-      {/* ===== MOBILE CARD VIEW (< md) ===== */}
-      <div className="md:hidden space-y-4">
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm space-y-3"
-          >
-            <div className="flex justify-between">
-              <h3 className="font-semibold">{product.name}</h3>
-              <button
-                onClick={() => deleteProduct(product.id)}
-                className="text-red-500 text-sm"
-              >
-                Delete
-              </button>
-            </div>
+      {/* Modals */}
 
-            <p className="text-sm text-gray-500">
-              Category: {product.category}
-            </p>
+      {showModal &&
+        <AddProductModal
+          close={()=>setShowModal(false)}
+          refresh={fetchProducts}
+        />
+      }
 
-            <p className="text-sm">Price: ₹ {product.price}</p>
+      {editingProduct &&
+        <EditProductModal
+          product={editingProduct}
+          close={()=>setEditingProduct(null)}
+          refresh={fetchProducts}
+        />
+      }
 
-            <div className="flex items-center gap-3">
-              <span className="text-sm">Stock:</span>
-              <input
-                type="number"
-                value={product.stock}
-                onChange={(e) =>
-                  updateStock(product.id, Number(e.target.value))
-                }
-                className="w-20 border p-1 rounded"
-              />
-              {product.stock < 5 && (
-                <span className="text-xs text-red-500">Low</span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

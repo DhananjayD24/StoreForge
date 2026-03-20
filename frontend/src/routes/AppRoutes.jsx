@@ -24,6 +24,7 @@ import Register from "../pages/Register";
 import Plans from "../pages/storeSetup/Plans";
 import CreateStore from "../pages/storeSetup/createStore";
 import StoreFront from "../pages/customer/storeFront";
+import Subscription from "../pages/storeAdmin/Subscription";
 
 function AppRoutes() {
   return (
@@ -51,6 +52,7 @@ function AppRoutes() {
         <Route path="dashboard" element={<StoreDashboard />} />
         <Route path="products" element={<Products />} />
         <Route path="orders" element={<Orders />} />
+        <Route path="subscription" element={<Subscription />} />
       </Route>
 
       {/* ===== Super Admin Routes ===== */}

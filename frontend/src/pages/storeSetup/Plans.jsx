@@ -12,7 +12,6 @@ export default function Plans() {
     const fetchPlans = async () => {
 
       const res = await api.get("/plans");
-
       setPlans(res.data);
 
     };
@@ -21,9 +20,15 @@ export default function Plans() {
 
   }, []);
 
-  const choosePlan = (planId) => {
+  const choosePlan = (plan) => {
 
-    navigate(`/create-store/${planId}`);
+    const confirmPayment = window.confirm(
+      `Plan: ${plan.name}\nPrice: ₹${plan.price}\n\nHave you completed the payment?`
+    );
+
+    if (!confirmPayment) return;
+
+    navigate(`/create-store/${plan._id}`);
 
   };
 
@@ -56,7 +61,7 @@ export default function Plans() {
             </p>
 
             <button
-              onClick={() => choosePlan(plan._id)}
+              onClick={() => choosePlan(plan)}
               className="mt-4 w-full bg-blue-600 text-white p-2 rounded"
             >
               Select Plan

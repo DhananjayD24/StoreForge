@@ -1,134 +1,223 @@
-// Dashboard.jsx
-// Premium Store Admin Dashboard
-// Clean SaaS-style layout with better spacing and visual hierarchy
+import { useEffect, useState } from "react";
+import api, { FRONTEND_BASE_URL } from "../../api/api";
 
-import useRevenueSimulator from "../../hooks/UseRevenueSimulator";
 import StatCard from "../../components/admin/StatCard";
-import { products } from "../../data/mockData";
-import { useOrder } from "../../context/OrderContext";
 import RevenueChart from "../../components/admin/RevenueChart";
 import OrdersChart from "../../components/admin/OrdersChart";
-import { FRONTEND_BASE_URL } from "../../api/api";
 
 function Dashboard() {
-  const { revenue, orders } = useOrder();
 
-  const totalOrders = 124;
-  const totalCustomers = 89;
-  const totalProducts = products.length;
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    totalOrders: 0,
+    totalProducts: 0
+  });
+
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [dailyRevenue, setDailyRevenue] = useState([]);
+
   const storeSlug = localStorage.getItem("storeSlug");
+
+  // =============================
+  // Fetch Dashboard Analytics
+  // =============================
+
+  const fetchDashboard = async () => {
+    try {
+
+      const res = await api.get("/analytics/dashboard");
+
+      setStats({
+        totalRevenue: res.data.totalRevenue,
+        totalOrders: res.data.totalOrders,
+        totalProducts: res.data.totalProducts
+      });
+
+      const revenueData =
+      res.data.dailyRevenue.length > 0
+        ? res.data.dailyRevenue
+        : [
+            { date: "Day 1", revenue: 0, orders: 0 },
+            { date: "Day 2", revenue: 0, orders: 0 },
+            { date: "Day 3", revenue: 0, orders: 0 },
+            { date: "Day 4", revenue: 0, orders: 0 },
+            { date: "Day 5", revenue: 0, orders: 0 },
+          ];
+
+      setDailyRevenue(revenueData);
+      setRecentOrders(res.data.recentOrders);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
 
   return (
     <div className="space-y-12">
+
       {/* ===== PAGE HEADER ===== */}
+
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Dashboard Overview</h1>
+
+        <h1 className="text-2xl md:text-3xl font-bold">
+          Dashboard Overview
+        </h1>
+
         <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
           Monitor your store performance in real time.
         </p>
+
       </div>
 
-      {/* ===== KPI GRID ===== */}
+      {/* ===== KPI CARDS ===== */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
         <StatCard
           title="Total Revenue"
-          value={`₹ ${revenue.toLocaleString()}`}
-          subtitle="+ Live updates"
+          value={`₹ ${stats.totalRevenue.toLocaleString()}`}
+          subtitle="All time"
         />
 
-        <StatCard title="Total Orders" value={totalOrders} />
+        <StatCard
+          title="Total Orders"
+          value={stats.totalOrders}
+        />
 
-        <StatCard title="Customers" value={totalCustomers} />
+        <StatCard
+          title="Total Products"
+          value={stats.totalProducts}
+        />
 
-        <StatCard title="Products" value={totalProducts} />
+        <StatCard
+          title="Store Status"
+          value="Active"
+        />
+
       </div>
 
-      <div className="mt-4">
-        Your Store Link:
+      {/* ===== STORE LINK ===== */}
+
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm flex items-center gap-3">
+
+        <span className="text-sm font-medium">
+          Your Store Link:
+        </span>
+
         <a
           href={`${FRONTEND_BASE_URL}/store/${storeSlug}`}
-          className="text-blue-600 ml-2"
           target="_blank"
           rel="noreferrer"
+          className="text-blue-600"
         >
           {FRONTEND_BASE_URL}/store/{storeSlug}
         </a>
-      </div>
-      <button
-        onClick={() =>
-          navigator.clipboard.writeText(
-            `${FRONTEND_BASE_URL}/store/${storeSlug}`,
-          )
-        }
-        className="ml-2 bg-gray-200 px-2 py-1 rounded"
-      >
-        Copy
-      </button>
 
-      {/* ===== Analytics Charts ===== */}
-      <div className="grid lg:grid-cols-2 gap-6 mt-8">
-        <RevenueChart />
-        <OrdersChart />
+        <button
+          onClick={() =>
+            navigator.clipboard.writeText(
+              `${FRONTEND_BASE_URL}/store/${storeSlug}`
+            )
+          }
+          className="ml-auto bg-gray-200 px-3 py-1 rounded text-sm"
+        >
+          Copy
+        </button>
+
+      </div>
+
+      {/* ===== ANALYTICS CHARTS ===== */}
+
+      <div className="grid lg:grid-cols-2 gap-6"> 
+
+        <RevenueChart data={dailyRevenue} />
+
+        <OrdersChart data={dailyRevenue} />
+
       </div>
 
       {/* ===== RECENT ORDERS ===== */}
+
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold mb-6">Recent Orders</h2>
+
+        <h2 className="text-lg font-semibold mb-6">
+          Recent Orders
+        </h2>
 
         <div className="overflow-x-auto">
+
           <table className="min-w-full text-sm">
+
             <thead>
+
               <tr className="text-left border-b dark:border-gray-700 text-gray-500">
+
                 <th className="py-3">Order ID</th>
                 <th>Customer</th>
                 <th>Amount</th>
                 <th>Status</th>
+
               </tr>
+
             </thead>
 
             <tbody className="divide-y dark:divide-gray-700">
-              <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <td className="py-3 font-medium">#12345</td>
-                <td>Rohan Sharma</td>
-                <td>₹ 4999</td>
-                <td>
-                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs">
-                    Processing
-                  </span>
-                </td>
-              </tr>
 
-              <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <td className="py-3 font-medium">#12346</td>
-                <td>Anita Verma</td>
-                <td>₹ 2999</td>
-                <td>
-                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs">
-                    Completed
-                  </span>
-                </td>
-              </tr>
+              {recentOrders.length === 0 && (
+
+                <tr>
+                  <td colSpan="4" className="py-6 text-center text-gray-400">
+                    No orders yet
+                  </td>
+                </tr>
+
+              )}
+
+              {recentOrders.map(order => (
+
+                <tr
+                  key={order._id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+
+                  <td className="py-3 font-medium">
+                    #{order._id.slice(-6)}
+                  </td>
+
+                  <td>
+                    {order.customerName}
+                  </td>
+
+                  <td>
+                    ₹ {order.totalAmount}
+                  </td>
+
+                  <td>
+
+                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs">
+
+                      {order.status || "Processing"}
+
+                    </span>
+
+                  </td>
+
+                </tr>
+
+              ))}
+
             </tbody>
+
           </table>
+
         </div>
+
       </div>
 
-      {/* ===== LOW STOCK ===== */}
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6">
-        <h2 className="font-semibold text-red-600 dark:text-red-400">
-          ⚠ Low Stock Alert
-        </h2>
-
-        <ul className="mt-4 text-sm space-y-2">
-          {products
-            .filter((product) => product.stock < 5)
-            .map((product) => (
-              <li key={product.id}>
-                {product.name} — Only {product.stock} left
-              </li>
-            ))}
-        </ul>
-      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@
 
 import Product from "../models/Product.js";
 import cloudinary from "../config/cloudinary.js";
+import Subscription from "../models/Subscription.js";
 
 // ==============================
 // Create Product
@@ -17,7 +18,33 @@ export const createProduct = async (req, res) => {
 
     const { name, price, description, stock, category } = req.body;
 
-    // Cloudinary already uploaded images
+    // Get subscription
+    const subscription = await Subscription
+      .findOne({
+        tenantId: req.user.tenantId,
+        status: "active"
+      })
+      .populate("planId");
+
+    if (!subscription) {
+      return res.status(403).json({
+        message: "No active subscription"
+      });
+    }
+
+    const limit = subscription.planId.productLimit;
+
+    const activeProducts = await Product.countDocuments({
+      tenantId: req.user.tenantId,
+      isFrozen: false
+    });
+
+    if (activeProducts >= limit) {
+      return res.status(403).json({
+        message: "Product limit reached for your plan"
+      });
+    }
+
     const imageUrls = req.files.map(file => file.path);
 
     const product = await Product.create({
@@ -42,13 +69,11 @@ export const createProduct = async (req, res) => {
 // ==============================
 
 export const getMyProducts = async (req, res) => {
-
   const products = await Product.find({
     tenantId: req.user.tenantId,
   });
 
   res.json(products);
-
 };
 
 // ==============================
@@ -57,11 +82,15 @@ export const getMyProducts = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-
     const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
+    }
+    if (product.isFrozen) {
+      return res.status(403).json({
+        message: "Product is frozen due to subscription limit",
+      });
     }
 
     const { name, price, description, stock, category } = req.body;
@@ -74,33 +103,28 @@ export const updateProduct = async (req, res) => {
 
     // If new images uploaded
     if (req.files && req.files.length > 0) {
-
       // =============================
       // Delete old images from Cloudinary
       // =============================
 
       for (const imageUrl of product.images) {
-
         const parts = imageUrl.split("/");
         const filename = parts[parts.length - 1];
         const publicId = "storeforge_products/" + filename.split(".")[0];
 
         await cloudinary.uploader.destroy(publicId);
-
       }
 
       // =============================
       // Save new images
       // =============================
 
-      product.images = req.files.map(file => file.path);
-
+      product.images = req.files.map((file) => file.path);
     }
 
     await product.save();
 
     res.json(product);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -112,8 +136,10 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findOne({
+      _id: req.params.id,
+      tenantId: req.user.tenantId,
+    });
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -121,7 +147,6 @@ export const deleteProduct = async (req, res) => {
 
     // Delete images from Cloudinary
     for (const imageUrl of product.images) {
-
       const parts = imageUrl.split("/");
       const filename = parts[parts.length - 1];
       const publicId = "storeforge_products/" + filename.split(".")[0];
@@ -132,7 +157,6 @@ export const deleteProduct = async (req, res) => {
     await Product.findByIdAndDelete(req.params.id);
 
     res.json({ message: "Product deleted" });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

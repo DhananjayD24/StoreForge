@@ -1,9 +1,9 @@
 import express from "express";
 import { getPublicStore } from "../controllers/storeController.js";
+import { checkStoreAvailability } from "../middleware/checkStoreAvailability.js";
 
 const router = express.Router();
 
-// public store page
-router.get("/:slug", getPublicStore);
+router.get("/:slug", checkStoreAvailability, getPublicStore);
 
 export default router;

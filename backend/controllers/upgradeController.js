@@ -7,6 +7,7 @@
 import Subscription from "../models/Subscription.js";
 import Plan from "../models/Plan.js";
 import { calculateProratedAmount } from "../services/pricingService.js";
+import Product from "../models/Product.js";
 
 // ==============================
 // Preview Upgrade Cost
@@ -14,7 +15,7 @@ import { calculateProratedAmount } from "../services/pricingService.js";
 
 export const previewUpgrade = async (req, res) => {
   try {
-    const tenantId = req.tenantId;
+    const tenantId = req.user.tenantId;
     const newPlanId = req.params.planId;
 
     const subscription = await Subscription.findOne({
@@ -56,7 +57,7 @@ export const previewUpgrade = async (req, res) => {
 
 export const upgradePlan = async (req, res) => {
   try {
-    const tenantId = req.tenantId;
+    const tenantId = req.user.tenantId;
     const { newPlanId } = req.body;
 
     const subscription = await Subscription.findOne({
@@ -81,7 +82,10 @@ export const upgradePlan = async (req, res) => {
       subscription
     );
 
-    // simulate payment success
+    // ============================
+    // Simulate payment success
+    // ============================
+
     const startDate = new Date();
     const endDate = new Date();
 
@@ -96,11 +100,36 @@ export const upgradePlan = async (req, res) => {
 
     await subscription.save();
 
+    // ============================
+    // Freeze / Unfreeze Products
+    // ============================
+
+    const products = await Product
+      .find({ tenantId })
+      .sort({ createdAt: 1 });
+
+    const limit = newPlan.productLimit;
+
+    for (let i = 0; i < products.length; i++) {
+
+      if (i < limit) {
+        products[i].isFrozen = false;
+        products[i].frozenReason = null;
+      } else {
+        products[i].isFrozen = true;
+        products[i].frozenReason = "Plan product limit exceeded";
+      }
+
+      await products[i].save();
+    }
+
     res.json({
-      message: "Plan upgraded successfully",
+      message: "Plan updated successfully",
       amountPaid: pricing.payableAmount,
       newPlan: newPlan.name,
+      productLimit: limit,
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

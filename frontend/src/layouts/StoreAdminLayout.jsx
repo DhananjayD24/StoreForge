@@ -45,6 +45,7 @@ function StoreAdminLayout() {
     { name: "Dashboard", path: "/store" },
     { name: "Products", path: "/store/products" },
     { name: "Orders", path: "/store/orders", badge: orders.length },
+    { name: "Subscription", path: "/store/subscription" },
   ];
 
   return (

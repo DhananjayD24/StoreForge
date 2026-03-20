@@ -1,8 +1,9 @@
 import express from "express";
 import { createProduct, updateProduct, deleteProduct, getMyProducts } from "../controllers/productController.js";
 
-import {protect} from "../middleware/authMiddleware.js";
-import {authorizeRoles} from "../middleware/roleMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/roleMiddleware.js";
+import { checkSubscription } from "../middleware/checkSubscription.js";
 
 import { upload } from "../middleware/uploadMiddleware.js";
 
@@ -14,20 +15,22 @@ Store Admin Product Management
 ================================================
 */
 
-// Create product with multiple images
+// Create product
 router.post(
   "/",
   protect,
   authorizeRoles("storeAdmin"),
+  checkSubscription,
   upload.array("images", 5),
   createProduct
 );
 
-// Get products of logged-in store admin
+// Get products
 router.get(
   "/my",
   protect,
   authorizeRoles("storeAdmin"),
+  checkSubscription,
   getMyProducts
 );
 
@@ -36,6 +39,7 @@ router.put(
   "/:id",
   protect,
   authorizeRoles("storeAdmin"),
+  checkSubscription,
   upload.array("images", 5),
   updateProduct
 );
@@ -45,6 +49,7 @@ router.delete(
   "/:id",
   protect,
   authorizeRoles("storeAdmin"),
+  checkSubscription,
   deleteProduct
 );
 

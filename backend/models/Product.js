@@ -29,9 +29,19 @@ const productSchema = new mongoose.Schema(
 
     images: [
       {
-        type: String, // image URL
+        type: String,
       },
     ],
+
+    isFrozen: {
+      type: Boolean,
+      default: false,
+    },
+
+    frozenReason: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

@@ -1,41 +1,61 @@
-/**
- * OrdersChart.jsx
- *
- * Shows number of orders per month.
- * Socket.io will later push updates here.
- */
-
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer,
   CartesianGrid,
+  ResponsiveContainer
 } from "recharts";
-import { useAnalytics } from "../../context/AnalyticsContext";
 
-export default function OrdersChart() {
-    const { ordersData } = useAnalytics();
+function OrdersChart({ data }) {
+
+  const hasData = data && data.length > 0;
+
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-      <h2 className="font-semibold mb-4">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
+
+      <h2 className="text-lg font-semibold mb-6">
         Orders Analytics
       </h2>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={ordersData}>
-          <CartesianGrid strokeDasharray="3 3" />
+      {!hasData ? (
 
-          <XAxis dataKey="month" />
-          <YAxis />
+        <div className="h-[300px] flex flex-col items-center justify-center text-gray-400 text-sm">
+          📦 No orders yet  
+          <span className="text-xs mt-1">
+            Orders chart will appear once customers place orders.
+          </span>
+        </div>
 
-          <Tooltip />
+      ) : (
 
-          <Bar dataKey="orders" fill="#22c55e" radius={[6,6,0,0]} />
-        </BarChart>
-      </ResponsiveContainer>
+        <ResponsiveContainer width="100%" height={300}>
+
+          <BarChart data={data}>
+
+            <CartesianGrid strokeDasharray="3 3" />
+
+            <XAxis dataKey="date" />
+
+            <YAxis />
+
+            <Tooltip />
+
+            <Bar
+              dataKey="orders"
+              fill="#22c55e"
+              radius={[4,4,0,0]}
+            />
+
+          </BarChart>
+
+        </ResponsiveContainer>
+
+      )}
+
     </div>
   );
 }
+
+export default OrdersChart;
