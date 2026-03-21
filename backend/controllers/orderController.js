@@ -7,9 +7,9 @@
 
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
-import { getIO } from "../config/socket.js";
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
+import { getIO } from "../config/socket.js";
 
 // ==============================
 // Create Order (Customer)
@@ -76,6 +76,30 @@ export const createOrder = async (req, res) => {
 
     res.status(201).json(order);
 
+    // find store admin
+const storeAdmin = await User.findOne({
+  tenantId,
+  role: "storeAdmin"
+});
+
+if (storeAdmin) {
+
+  const notification = await Notification.create({
+    userId: storeAdmin._id,
+    tenantId,
+    message: `New order from ${customerName} - ₹${totalAmount}`,
+    orderId: order._id,
+    customerName,
+    customerPhone,
+    totalAmount,
+    type: "success"
+  });
+
+  const io = getIO();
+
+  io.to(tenantId.toString()).emit("new-order", notification);
+}
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -114,3 +138,4 @@ export const getMyOrders = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+

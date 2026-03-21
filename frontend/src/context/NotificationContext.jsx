@@ -1,70 +1,43 @@
-/**
- * NotificationContext.jsx
- *
- * Global notification system.
- *
- * CURRENT:
- * - Simulated notifications
- *
- * FUTURE:
- * - Socket.io pushes real events
- * - Toast UI via Shadcn
- */
-
 import { createContext, useContext, useState, useEffect } from "react";
+import { io } from "socket.io-client";
 
 const NotificationContext = createContext();
 
 export const useNotifications = () => useContext(NotificationContext);
 
 export const NotificationProvider = ({ children }) => {
-  // notification list
+
   const [notifications, setNotifications] = useState([]);
 
-  /**
-   * Simulate incoming notifications
-   * (Socket.io later replaces this)
-   */
   useEffect(() => {
-    const interval = setInterval(() => {
-      addNotification("New order received!", "success");
-    }, 12000);
 
-    return () => clearInterval(interval);
+    const socket = io("http://localhost:5000");
+
+    const tenantId = localStorage.getItem("tenantId");
+
+    socket.emit("join-tenant", tenantId);
+
+    socket.on("new-order", (notification) => {
+
+      setNotifications(prev => [notification, ...prev]);
+
+    });
+
+    return () => socket.disconnect();
+
   }, []);
 
-  /**
-   * Add new notification
-   * (Socket events will call this later)
-   */
-  const addNotification = (message, type = "info") => {
-    const newNotification = {
-      id: Date.now(),
-      message,
-      type,
-      read: false,
-    };
+  const unreadCount = notifications.filter(n => !n.read).length;
 
-    setNotifications((prev) => [newNotification, ...prev]);
-  };
-
-  /**
-   * Mark all as read
-   */
   const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setNotifications(prev =>
+      prev.map(n => ({ ...n, read: true }))
+    );
   };
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <NotificationContext.Provider
-      value={{
-        notifications,
-        addNotification,
-        markAllRead,
-        unreadCount,
-      }}
+      value={{ notifications, unreadCount, markAllRead }}
     >
       {children}
     </NotificationContext.Provider>
