@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../../api/api";
 import { useNavigate } from "react-router-dom";
 
@@ -9,9 +9,41 @@ export default function CreateStore() {
   const navigate = useNavigate();
 
   const [storeName, setStoreName] = useState("");
+  const [slugPreview, setSlugPreview] = useState("");
+  const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // fetch selected plan info
+  useEffect(() => {
+
+    const fetchPlan = async () => {
+      try {
+        const res = await api.get("/plans");
+        const selected = res.data.find(p => p._id === planId);
+        setPlan(selected);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchPlan();
+
+  }, [planId]);
+
+  // generate slug preview
+  useEffect(() => {
+
+    const slug = storeName
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-");
+
+    setSlugPreview(slug);
+
+  }, [storeName]);
+
   const createStore = async (e) => {
+
     e.preventDefault();
 
     if (!storeName.trim()) {
@@ -28,13 +60,10 @@ export default function CreateStore() {
         planId,
       });
 
-      // Save updated auth + tenant data
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("tenantId", res.data.tenantId);
       localStorage.setItem("storeSlug", res.data.storeSlug);
       localStorage.setItem("role", res.data.role);
-
-      alert("Store created successfully!");
 
       navigate("/store");
 
@@ -44,41 +73,77 @@ export default function CreateStore() {
       alert(error.response?.data?.message || "Error creating store");
 
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="flex justify-center py-20 px-4">
 
-      <form
-        onSubmit={createStore}
-        className="bg-white p-8 rounded-xl shadow-md w-96 space-y-4"
-      >
+      <div className="bg-white p-10 rounded-2xl shadow-xl hover:shadow-2xl transition w-full max-w-lg space-y-6">
 
-        <h2 className="text-2xl font-bold text-center">
+        <h2 className="text-3xl font-bold text-center text-indigo-600">
           Create Your Store
         </h2>
 
-        <input
-          type="text"
-          placeholder="Store Name"
-          className="border p-2 w-full rounded"
-          value={storeName}
-          onChange={(e) => setStoreName(e.target.value)}
-        />
+        {/* Plan Info */}
+        {plan && (
+          <div className="bg-indigo-50 p-4 rounded-lg text-center">
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-4 bg-green-600 text-white w-full p-2 rounded hover:bg-green-700"
-        >
-          {loading ? "Creating..." : "Create Store"}
-        </button>
+            <p className="font-semibold">
+              Selected Plan: {plan.name}
+            </p>
 
-      </form>
+            <p className="text-sm text-gray-600">
+              ₹{plan.price} • {plan.productLimit} products
+            </p>
+
+          </div>
+        )}
+
+        <form onSubmit={createStore} className="space-y-4">
+
+          <input
+            type="text"
+            placeholder="Store Name"
+            className="border p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-400"
+            value={storeName}
+            onChange={(e) => setStoreName(e.target.value)}
+          />
+
+          {/* Store URL Preview */}
+
+          {slugPreview && (
+
+            <div className="bg-gray-100 p-3 rounded text-sm">
+
+              Your store URL will be:
+
+              <p className="font-semibold text-indigo-600">
+                storeforge.com/store/{slugPreview}
+              </p>
+
+            </div>
+
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || !storeName.trim()}
+            className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 hover:scale-105 transition disabled:opacity-50"
+          >
+            {loading ? "Creating Store..." : "Create Store"}
+          </button>
+
+        </form>
+
+      </div>
 
     </div>
+
   );
 }

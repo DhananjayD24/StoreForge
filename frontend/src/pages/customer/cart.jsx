@@ -1,80 +1,122 @@
-// Cart.jsx
-// Displays cart items and order summary.
-
 import { useCart } from "../../context/CartContext";
-import { Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Cart() {
   const { cartItems, removeFromCart, updateQuantity, totalPrice } = useCart();
+  const navigate = useNavigate();
+  const { slug } = useParams();
 
-  if (cartItems.length === 0) {
-    return <p className="text-center text-lg">Your cart is empty.</p>;
+  if (!cartItems || cartItems.length === 0) {
+    return (
+      <div className="py-20 text-center">
+        <h2 className="text-2xl font-semibold mb-4">
+          Your Cart is Empty
+        </h2>
+
+        <button
+          onClick={() => navigate(`/store/${slug}`)}
+          className="bg-black text-white px-6 py-2 rounded-xl"
+        >
+          Continue Shopping
+        </button>
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <div className="max-w-5xl mx-auto py-16 px-6 space-y-10">
+
+      <h1 className="text-3xl font-bold">
+        Your Cart
+      </h1>
+
       {/* Cart Items */}
-      <div className="lg:col-span-2 space-y-6">
+
+      <div className="space-y-6">
+
         {cartItems.map((item) => (
+
           <div
-            key={item.id}
-            className="flex flex-col md:flex-row gap-6 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm"
+            key={item._id}
+            className="flex items-center justify-between bg-white rounded-xl shadow p-4"
           >
+
+            {/* Image */}
+
             <img
               src={item.image}
               alt={item.name}
-              className="w-32 h-32 object-cover rounded-xl"
+              className="w-20 h-20 object-cover rounded-lg"
             />
 
-            <div className="flex-1 space-y-3">
-              <h3 className="font-semibold">{item.name}</h3>
-              <p>₹ {item.price}</p>
+            {/* Name */}
 
-              {/* Quantity Controls */}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => updateQuantity(item.id, -1)}
-                  className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded"
-                >
-                  -
-                </button>
+            <div className="flex-1 px-6">
+              <h3 className="font-semibold">
+                {item.name}
+              </h3>
 
-                <span>{item.quantity}</span>
+              <p className="text-gray-500">
+                ₹ {item.price}
+              </p>
+            </div>
 
-                <button
-                  onClick={() => updateQuantity(item.id, 1)}
-                  className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded"
-                >
-                  +
-                </button>
-              </div>
+            {/* Quantity Controls */}
+
+            <div className="flex items-center gap-3">
 
               <button
-                onClick={() => removeFromCart(item.id)}
-                className="text-red-500 text-sm"
+                onClick={() => updateQuantity(item._id, -1)}
+                className="px-3 py-1 bg-gray-200 rounded"
               >
-                Remove
+                -
               </button>
+
+              <span>
+                {item.quantity}
+              </span>
+
+              <button
+                onClick={() => updateQuantity(item._id, 1)}
+                className="px-3 py-1 bg-gray-200 rounded"
+              >
+                +
+              </button>
+
             </div>
+
+            {/* Remove */}
+
+            <button
+              onClick={() => removeFromCart(item._id)}
+              className="text-red-500 font-semibold ml-6"
+            >
+              Remove
+            </button>
+
           </div>
+
         ))}
+
       </div>
 
-      {/* Order Summary */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm h-fit">
-        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+      {/* Cart Summary */}
 
-        <p className="flex justify-between">
-          <span>Total</span>
-          <span>₹ {totalPrice}</span>
-        </p>
+      <div className="flex justify-between items-center bg-gray-100 p-6 rounded-xl">
 
-        <Link to="/checkout">
-          <button className="mt-6 w-full bg-black text-white py-3 rounded-xl">
-            Proceed to Checkout
-          </button>
-        </Link>
+        <h2 className="text-xl font-semibold">
+          Total: ₹ {totalPrice}
+        </h2>
+
+        <button
+          onClick={() => navigate(`/store/${slug}/checkout`)}
+          className="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700"
+        >
+          Proceed to Checkout
+        </button>
+
       </div>
+
     </div>
   );
 }

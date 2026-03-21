@@ -25,19 +25,13 @@ import Plans from "../pages/storeSetup/Plans";
 import CreateStore from "../pages/storeSetup/createStore";
 import StoreFront from "../pages/customer/storeFront";
 import Subscription from "../pages/storeAdmin/Subscription";
+import LandingPage from "../pages/landing/LandingPage";
+import PublicLayout from "../layouts/PublicLayout";
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* ===== Customer Routes ===== */}
-      <Route path="/" element={<CustomerLayout />}>
-        <Route index element={<Home />} />
-        <Route path="product/:id" element={<ProductDetails />} />
-        <Route path="cart" element={<Cart />} />
-        <Route path="checkout" element={<Checkout />} />
-        <Route path="order-success" element={<OrderSuccess />} />
-        <Route path="orders" element={<OrderHistory />} />
-      </Route>
+      <Route path="/" element={<LandingPage />} />
 
       {/* ===== Store Admin Routes ===== */}
       <Route
@@ -71,10 +65,12 @@ function AppRoutes() {
         <Route path="tenant/:id" element={<TenantDetails />} />
       </Route>
 
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/plans" element={<Plans />} />
-      <Route path="/create-store/:planId" element={<CreateStore />} />
+      <Route element={<PublicLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/plans" element={<Plans />} />
+        <Route path="/create-store/:planId" element={<CreateStore />} />
+      </Route>
 
       <Route path="/store/:slug" element={<CustomerLayout />}>
         <Route index element={<Home />} />

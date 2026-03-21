@@ -7,7 +7,7 @@
 import express from "express";
 import {
   createStoreSelfService,
-} from "../controllers/TenantController.js";
+} from "../controllers/tenantController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 

@@ -6,7 +6,7 @@ export const checkStoreAvailability = async (req, res, next) => {
 
     const { slug } = req.params;
 
-    const tenant = await Tenant.findOne({ slug });
+    const tenant = await Tenant.findOne({ storeSlug: slug });
 
     if (!tenant) {
       return res.status(404).json({

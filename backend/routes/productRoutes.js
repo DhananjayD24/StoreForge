@@ -1,5 +1,5 @@
 import express from "express";
-import { createProduct, updateProduct, deleteProduct, getMyProducts } from "../controllers/productController.js";
+import { createProduct, updateProduct, deleteProduct, getMyProducts, getProductById } from "../controllers/productController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 import { authorizeRoles } from "../middleware/roleMiddleware.js";
@@ -52,5 +52,7 @@ router.delete(
   checkSubscription,
   deleteProduct
 );
+
+router.get("/:id", getProductById);
 
 export default router;

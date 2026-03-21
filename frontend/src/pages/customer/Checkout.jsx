@@ -1,86 +1,145 @@
-// Checkout.jsx
-// Shipping form + payment selection UI
-// On submit: saves order + clears cart
-
 import { useCart } from "../../context/CartContext";
-import { useOrder } from "../../context/OrderContext";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../api/api";
 
 function Checkout() {
-  const { cartItems, totalPrice } = useCart();
-  const { placeOrder } = useOrder();
+
+  const { cartItems, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
+  const { slug } = useParams();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: ""
+  });
 
-    placeOrder(cartItems, totalPrice);
-    navigate("/order-success");
+  const [loading, setLoading] = useState(false);
+
+  const placeOrder = async () => {
+
+    if (!form.name || !form.email || !form.phone) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    try {
+
+      setLoading(true);
+
+      const items = cartItems.map((item) => ({
+        productId: item._id,
+        quantity: item.quantity
+      }));
+
+      await api.post("/orders", { items });
+
+      clearCart();
+
+      navigate(`/store/${slug}/order-success`);
+
+    } catch (error) {
+
+      console.error(error);
+      alert("Order failed");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
   };
 
-  if (cartItems.length === 0) {
-    return <p>Your cart is empty.</p>;
-  }
-
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-      {/* Shipping Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm space-y-4"
-      >
-        <h2 className="text-xl font-semibold">Shipping Details</h2>
+    <div className="max-w-3xl mx-auto py-16 px-6 space-y-10">
+
+      <h1 className="text-3xl font-bold">
+        Checkout
+      </h1>
+
+      {/* Customer Info */}
+
+      <div className="space-y-4">
 
         <input
-          type="text"
-          placeholder="Full Name"
-          required
-          className="w-full border p-3 rounded-lg dark:bg-gray-700"
+          placeholder="Your Name"
+          className="border w-full p-3 rounded"
+          onChange={(e) =>
+            setForm({ ...form, name: e.target.value })
+          }
         />
 
         <input
-          type="text"
-          placeholder="Address"
-          required
-          className="w-full border p-3 rounded-lg dark:bg-gray-700"
+          placeholder="Email Address"
+          className="border w-full p-3 rounded"
+          onChange={(e) =>
+            setForm({ ...form, email: e.target.value })
+          }
         />
 
-        <select
-          className="w-full border p-3 rounded-lg dark:bg-gray-700"
-        >
-          <option>Cash on Delivery</option>
-          <option>Credit Card</option>
-        </select>
+        <input
+          placeholder="Mobile Number"
+          className="border w-full p-3 rounded"
+          onChange={(e) =>
+            setForm({ ...form, phone: e.target.value })
+          }
+        />
 
-        <button
-          type="submit"
-          className="w-full bg-black text-white py-3 rounded-xl"
-        >
-          Place Order
-        </button>
-      </form>
+      </div>
 
       {/* Order Summary */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+
+      <div className="bg-gray-100 p-6 rounded-xl space-y-3">
 
         {cartItems.map((item) => (
-          <p key={item.id} className="flex justify-between text-sm mb-2">
-            <span>{item.name} x {item.quantity}</span>
-            <span>₹ {item.price * item.quantity}</span>
-          </p>
+
+          <div
+            key={item._id}
+            className="flex justify-between"
+          >
+
+            <span>
+              {item.name} × {item.quantity}
+            </span>
+
+            <span>
+              ₹ {item.price * item.quantity}
+            </span>
+
+          </div>
+
         ))}
 
-        <hr className="my-4" />
+        <hr />
 
-        <p className="flex justify-between font-semibold">
+        <div className="flex justify-between font-semibold text-lg">
+
           <span>Total</span>
           <span>₹ {totalPrice}</span>
-        </p>
+
+        </div>
+
       </div>
+
+      {/* Place Order Button */}
+
+      <button
+        onClick={placeOrder}
+        disabled={loading}
+        className="w-full bg-black text-white py-3 rounded-xl hover:opacity-90"
+      >
+
+        {loading ? "Placing Order..." : "Place Order"}
+
+      </button>
+
     </div>
+
   );
+
 }
 
 export default Checkout;
