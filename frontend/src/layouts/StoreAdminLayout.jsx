@@ -22,6 +22,7 @@ import { useNotifications } from "../context/NotificationContext";
 import NotificationDropdown from "../components/ui/NotificationDropdown";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import ProfileDropdown from "../components/admin/ProfileDropdown";
 
 function StoreAdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -199,6 +200,15 @@ function StoreAdminLayout() {
             >
               Logout
             </button>
+
+            <div className="flex items-center gap-4">
+
+  {/* notifications if you have */}
+  
+  <ProfileDropdown />
+
+</div>
+
           </div>
         </header>
 

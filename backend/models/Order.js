@@ -1,16 +1,4 @@
-/**
- * File: Order.js
- * Purpose:
- * Stores customer purchase data.
- * Each order belongs to a tenant (store)
- * enabling multi-tenant order isolation.
- */
-
 import mongoose from "mongoose";
-
-// ==============================
-// Order Item Schema
-// ==============================
 
 const orderItemSchema = new mongoose.Schema({
   productId: {
@@ -21,10 +9,6 @@ const orderItemSchema = new mongoose.Schema({
   quantity: Number,
   price: Number,
 });
-
-// ==============================
-// Order Schema
-// ==============================
 
 const orderSchema = new mongoose.Schema(
   {
@@ -37,17 +21,33 @@ const orderSchema = new mongoose.Schema(
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+
+    customerName: {
+      type: String,
+      required: true,
+    },
+
+    customerEmail: {
+      type: String,
+      required: true,
+    },
+
+    customerPhone: {
+      type: String,
+      required: true,
+    },
+
+    customerAddress: {
+      type: String,
       required: true,
     },
 
     items: [orderItemSchema],
 
-    totalAmount: Number,
-
-    status: {
-      type: String,
-      enum: ["pending", "shipped", "delivered"],
-      default: "pending",
+    totalAmount: {
+      type: Number,
+      required: true,
     },
   },
   { timestamps: true }

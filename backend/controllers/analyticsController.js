@@ -1,9 +1,10 @@
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import mongoose from "mongoose";
 
 export const getDashboardAnalytics = async (req, res) => {
   try {
-    const tenantId = req.user.tenantId;
+    const tenantId = new mongoose.Types.ObjectId(req.user.tenantId);
 
     const revenueData = await Order.aggregate([
       { $match: { tenantId } },
@@ -54,8 +55,8 @@ export const getDashboardAnalytics = async (req, res) => {
       dailyRevenue,
       recentOrders,
     });
-
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };

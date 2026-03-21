@@ -17,8 +17,15 @@ import User from "../models/User.js";
 
 export const createOrder = async (req, res) => {
   try {
-    const { items } = req.body;
-    const customerId = req.user.userId;
+    const {
+      items,
+      customerName,
+      customerEmail,
+      customerPhone,
+      customerAddress,
+    } = req.body;
+
+    const customerId = req.user?.userId;
 
     if (!items || items.length === 0)
       return res.status(400).json({ message: "No items provided" });
@@ -28,30 +35,22 @@ export const createOrder = async (req, res) => {
 
     const processedItems = [];
 
-    // ==============================
-    // Validate products & calculate total
-    // ==============================
-
     for (const item of items) {
       const product = await Product.findById(item.productId);
 
       if (!product)
         return res.status(404).json({ message: "Product not found" });
 
-      // ensure same tenant store
       if (!tenantId) tenantId = product.tenantId;
 
-      if (!product.tenantId.equals(tenantId)) {
+      if (!product.tenantId.equals(tenantId))
         return res
           .status(400)
           .json({ message: "Products must belong to same store" });
-      }
 
-      // stock validation
       if (product.stock < item.quantity)
         return res.status(400).json({ message: "Insufficient stock" });
 
-      // reduce stock
       product.stock -= item.quantity;
       await product.save();
 
@@ -64,57 +63,19 @@ export const createOrder = async (req, res) => {
       });
     }
 
-    // ==============================
-    // Create Order
-    // ==============================
-
     const order = await Order.create({
       tenantId,
       customerId,
+      customerName,
+      customerEmail,
+      customerPhone,
+      customerAddress,
       items: processedItems,
       totalAmount,
     });
 
-    /**
-     * After order creation:
-     * 1. Save persistent notification
-     * 2. Emit realtime event to tenant room
-     */
-
-    // ==============================
-    // Create Persistent Notification
-    // ==============================
-
-    // find store admin of this tenant
-    const storeAdmin = await User.findOne({
-      tenantId,
-      role: "storeAdmin",
-    });
-
-    if (storeAdmin) {
-      const notification = await Notification.create({
-        userId: storeAdmin._id,
-        tenantId,
-        message: "New order received",
-        type: "success",
-      });
-
-      // ==============================
-      // Emit Realtime Event
-      // ==============================
-
-      const io = getIO();
-
-      io.to(tenantId.toString()).emit("order-created", {
-        notification,
-        order: {
-          id: order._id,
-          totalAmount: order.totalAmount,
-        },
-      });
-    }
-
     res.status(201).json(order);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

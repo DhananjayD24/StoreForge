@@ -1,40 +1,34 @@
-// OrderContext.jsx
-// Simulates backend order storage.
-// Stores completed orders in memory.
-
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import api from "../api/api";
 
 const OrderContext = createContext();
 
 export function OrderProvider({ children }) {
+
   const [orders, setOrders] = useState([]);
-  const [revenue, setRevenue] = useState(0);
 
-  // Place new order
-  const placeOrder = (cartItems, totalPrice) => {
-    const newOrder = {
-      id: Date.now(),
-      items: cartItems,
-      total: totalPrice,
-      date: new Date().toLocaleString(),
-      status: "Processing",
-    };
+  const fetchOrders = async () => {
+    try {
 
-    setOrders((prev) => [...prev, newOrder]);
-    setRevenue((prev) => prev + totalPrice); // 🔥 auto increase revenue
+      const res = await api.get("/orders/tenant");
+
+      setOrders(res.data);
+
+    } catch (error) {
+
+      console.error("Failed to fetch orders:", error);
+
+    }
   };
 
-  // Update order status (ADMIN SIDE)
-  const updateOrderStatus = (id, status) => {
-    setOrders((prev) =>
-      prev.map((order) => (order.id === id ? { ...order, status } : order)),
-    );
-  };
+  useEffect(() => {
+
+    fetchOrders();
+
+  }, []);
 
   return (
-    <OrderContext.Provider
-      value={{ orders, placeOrder, updateOrderStatus, revenue }}
-    >
+    <OrderContext.Provider value={{ orders, fetchOrders }}>
       {children}
     </OrderContext.Provider>
   );

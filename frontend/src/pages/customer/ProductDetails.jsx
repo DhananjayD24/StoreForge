@@ -115,14 +115,17 @@ function ProductDetails() {
             </button>
 
             <button
-              onClick={() =>
-                navigate(`/store/${slug}/checkout`, {
-                  state: {
-                    product,
-                    quantity,
-                  },
-                })
-              }
+              onClick={() => {
+                addToCart({
+                  _id: product._id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.images?.[0],
+                  quantity,
+                });
+
+                navigate(`/store/${slug}/checkout`);
+              }}
               className="flex-1 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700"
             >
               Buy Now
