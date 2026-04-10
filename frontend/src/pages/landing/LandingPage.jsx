@@ -135,7 +135,7 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             <button
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/login")}
               className="px-8 py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-2xl transition hover:scale-105 shadow-xl shadow-indigo-900/40 text-base"
             >
               Start Free →
