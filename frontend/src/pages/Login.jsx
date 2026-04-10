@@ -95,10 +95,10 @@ export default function Login() {
       const role = localStorage.getItem("role");
       const tenantId = localStorage.getItem("tenantId");
 
-      if (role === "superAdmin") navigate("/admin");
-      else if (role === "storeAdmin" && (!tenantId || tenantId === "null")) navigate("/plans");
-      else if (role === "storeAdmin") navigate("/store");
-      else navigate("/");
+      if (role === "superAdmin") window.location.href = "/admin";
+      else if (role === "storeAdmin" && (!tenantId || tenantId === "null")) window.location.href = "/plans";
+      else if (role === "storeAdmin") window.location.href = "/store";
+      else window.location.href = "/";
     } catch {
       setError("Invalid credentials. Try the demo button below.");
     } finally {
