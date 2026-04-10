@@ -55,6 +55,7 @@ To run this project locally, you will need to set up Environment Secret files (`
 # Server Config
 PORT=5000
 CORS_ORIGIN=http://localhost:5173
+BACKEND_URL=http://localhost:5000
 
 # Database
 MONGO_URI=your_mongodb_connection_string_here
