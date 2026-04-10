@@ -39,11 +39,14 @@ const colorMap = {
   },
 };
 
-function StatCard({ title, value, subtitle, icon: Icon, color = "blue", change, status }) {
+function StatCard({ title, value, subtitle, icon: Icon, color = "blue", change, status, onClick }) {
   const c = colorMap[color] || colorMap.blue;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all duration-200 animate-fade-in-up group">
+    <div 
+      onClick={onClick}
+      className={`bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all duration-200 animate-fade-in-up group ${onClick ? "cursor-pointer" : ""}`}
+    >
       <div className="flex items-start justify-between mb-4">
         {Icon ? (
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${c.icon} transition-transform group-hover:scale-110`}>

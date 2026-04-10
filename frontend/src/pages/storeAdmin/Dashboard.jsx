@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api, { FRONTEND_BASE_URL } from "../../api/api";
 import StatCard from "../../components/admin/StatCard";
 import RevenueChart from "../../components/admin/RevenueChart";
@@ -37,7 +38,14 @@ const IconExternal = () => (
 );
 
 function Dashboard() {
-  const [stats, setStats] = useState({ totalRevenue: 0, totalOrders: 0, totalProducts: 0 });
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({ 
+    totalRevenue: 0, 
+    totalOrders: 0, 
+    totalProducts: 0,
+    revenueChange: null,
+    ordersChange: null
+  });
   const [recentOrders, setRecentOrders] = useState([]);
   const [dailyRevenue, setDailyRevenue] = useState([]);
   const [copied, setCopied] = useState(false);
@@ -48,11 +56,36 @@ function Dashboard() {
   const fetchDashboard = async () => {
     try {
       const res = await api.get("/analytics/dashboard");
+      
+      let revChange = null;
+      let ordChange = null;
+      
+      if (res.data.dailyRevenue && res.data.dailyRevenue.length >= 2) {
+        const sorted = res.data.dailyRevenue;
+        const today = sorted[sorted.length - 1];
+        const yesterday = sorted[sorted.length - 2];
+        
+        if (yesterday.revenue > 0) {
+          revChange = Math.round(((today.revenue - yesterday.revenue) / yesterday.revenue) * 100);
+        } else if (today.revenue > 0) {
+          revChange = 100;
+        }
+
+        if (yesterday.orders > 0) {
+          ordChange = Math.round(((today.orders - yesterday.orders) / yesterday.orders) * 100);
+        } else if (today.orders > 0) {
+          ordChange = 100;
+        }
+      }
+
       setStats({
         totalRevenue: res.data.totalRevenue,
         totalOrders: res.data.totalOrders,
         totalProducts: res.data.totalProducts,
+        revenueChange: revChange,
+        ordersChange: ordChange,
       });
+
       const revenueData =
         res.data.dailyRevenue?.length > 0
           ? res.data.dailyRevenue
@@ -97,7 +130,7 @@ function Dashboard() {
           value={`₹${stats.totalRevenue.toLocaleString("en-IN")}`}
           icon={IconRevenue}
           color="emerald"
-          change={14}
+          change={stats.revenueChange}
           subtitle="All time earnings"
         />
         <StatCard
@@ -105,7 +138,8 @@ function Dashboard() {
           value={stats.totalOrders}
           icon={IconOrders}
           color="blue"
-          change={7}
+          change={stats.ordersChange}
+          onClick={() => navigate("/store/orders")}
         />
         <StatCard
           title="Total Products"
