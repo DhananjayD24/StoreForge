@@ -16,10 +16,18 @@ import planRoutes from "./routes/planRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js"
 import path from "path";
+import dotenv from "dotenv";
 
 const app = express();
 
-app.use(cors());
+dotenv.config();
+
+const allowedOrigins = process.env.CORS_ORIGIN.split(",");
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // ==============================

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // backend base URL
-export const API_BASE_URL = "http://localhost:5000/api";
+export const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 // frontend base URL (for store links)
 export const FRONTEND_BASE_URL = window.location.origin;
