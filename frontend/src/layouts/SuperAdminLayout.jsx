@@ -24,6 +24,11 @@ const IconMenu = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
   </svg>
 );
+const IconPlans = ({ cls }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={cls}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 011.875 1.875v1.5a1.875 1.875 0 01-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875v-1.5c0-1.036.84-1.875 1.875-1.875z" />
+  </svg>
+);
 const IconClose = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -57,11 +62,17 @@ const navItems = [
     description: "Manage all stores",
   },
   {
-    name: "Create Tenant",
-    path: "/admin/create-tenant",
-    icon: IconPlus,
-    description: "Onboard new store",
+    name: "Plans",
+    path: "/admin/plans",
+    icon: IconPlans,
+    description: "Manage subscription plans",
   },
+  // {
+  //   name: "Create Tenant",
+  //   path: "/admin/create-tenant",
+  //   icon: IconPlus,
+  //   description: "Onboard new store",
+  // },
 ];
 
 /* ─────────────────────────────────────

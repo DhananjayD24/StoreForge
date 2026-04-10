@@ -49,7 +49,7 @@ const IconZap = () => (
 ───────────────────────────────────── */
 const DEMO = {
   superAdmin: { email: "superadmin@storeforge.com", password: "admin123" },
-  storeAdmin: { email: "check123@gmail.com", password: "123456" },
+  storeAdmin: { email: "ABC@gmail.com", password: "123456" },
 };
 
 /* ─────────────────────────────────────

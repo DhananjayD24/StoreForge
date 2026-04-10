@@ -156,14 +156,7 @@ export default function Dashboard() {
           icon={IconBan}
           color="rose"
         />
-        <SuperStatCard
-          title="Platform Revenue"
-          value="₹1,24,000"
-          icon={IconRevenue}
-          color="amber"
-          change={8}
-          note="Mock data"
-        />
+
       </div>
 
       {/* Recent Tenants */}

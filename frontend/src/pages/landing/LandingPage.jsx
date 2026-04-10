@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/api";
 
 /* ─── Feature icons ─── */
 const features = [
@@ -70,14 +72,39 @@ const steps = [
   { num: "03", title: "Launch your store", desc: "Add products and start selling immediately." },
 ];
 
-const pricingPlans = [
-  { name: "Starter", price: "₹99", period: "/mo", limit: "10 Products", popular: false, color: "border-slate-200" },
-  { name: "Growth",  price: "₹299", period: "/mo", limit: "100 Products", popular: true, color: "border-indigo-500" },
-  { name: "Pro",     price: "₹699", period: "/mo", limit: "Unlimited Products", popular: false, color: "border-slate-200" },
-];
-
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [pricingPlans, setPricingPlans] = useState([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const { data } = await api.get("/plans");
+        const formattedPlans = data.map((plan, index) => {
+          const isGrowth = plan.name.toLowerCase().includes("growth") || plan.name.toLowerCase().includes("pro") && index === 1;
+          const periodStr = plan.durationDays === 30 ? "/mo" : plan.durationDays === 365 ? "/yr" : `/${plan.durationDays}d`;
+          const limitStr = plan.productLimit === -1 ? "Unlimited Products" : `${plan.productLimit} Products`;
+          
+          return {
+            id: plan._id,
+            name: plan.name,
+            price: `₹${plan.price}`,
+            period: periodStr,
+            limit: limitStr,
+            popular: isGrowth,
+            color: isGrowth ? "border-indigo-500" : "border-slate-200"
+          };
+        });
+        setPricingPlans(formattedPlans);
+      } catch (error) {
+        console.error("Failed to fetch plans:", error);
+      } finally {
+        setLoadingPlans(false);
+      }
+    };
+    fetchPlans();
+  }, []);
 
   return (
     <div className="bg-white text-slate-800">
@@ -211,9 +238,13 @@ export default function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {pricingPlans.map((plan, i) => (
+            {loadingPlans ? (
+              <div className="col-span-3 text-center py-10">
+                <span className="text-slate-500">Loading plans...</span>
+              </div>
+            ) : pricingPlans.map((plan, i) => (
               <div
-                key={i}
+                key={plan.id || i}
                 className={`relative bg-white rounded-2xl p-7 border-2 ${plan.color} ${plan.popular ? "shadow-xl shadow-indigo-100" : "hover:shadow-lg"} transition-all`}
               >
                 {plan.popular && (
