@@ -54,36 +54,32 @@ function ProfileDropdown() {
 
       <button
         onClick={() => setOpen(!open)}
-        className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center font-bold"
+        className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-sm hover:opacity-90 transition transform hover:scale-105"
       >
-        {userName[0]}
+        {userName[0].toUpperCase()}
       </button>
 
       {/* Dropdown */}
 
       {open && (
-
-        <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-gray-800 shadow-lg rounded-xl p-4 space-y-3">
-
-          <div>
-
-            <p className="font-semibold">{userName}</p>
-
-            <p className="text-sm text-gray-500">
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 mt-3 w-64 bg-white shadow-xl border border-slate-100 rounded-2xl p-5 space-y-4 z-50">
+            <div>
+              <p className="font-bold text-slate-900">{userName}</p>
+            <p className="text-sm font-medium text-blue-600 mt-1">
               Store: {storeName}
             </p>
-
-            <p className="text-sm text-gray-500">
+            <p className="text-xs text-slate-500 mt-0.5">
               Plan: {plan}
             </p>
-
           </div>
 
-          <hr />
+          <hr className="border-slate-100" />
 
           <button
             onClick={changeStoreName}
-            className="w-full text-left text-sm hover:text-blue-600"
+            className="w-full text-left text-sm font-medium text-slate-700 hover:text-blue-600 transition"
           >
             Change Store Name
           </button>
@@ -93,13 +89,12 @@ function ProfileDropdown() {
               localStorage.removeItem("token");
               window.location.href = "/login";
             }}
-            className="w-full text-left text-sm text-red-500"
+            className="w-full text-left text-sm font-bold text-red-600 hover:text-red-700 transition"
           >
             Logout
           </button>
-
         </div>
-
+        </>
       )}
 
     </div>

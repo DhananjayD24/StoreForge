@@ -10,20 +10,25 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
 
-    const res = await api.post("/auth/login", {
-      email,
-      password
-    });
+  const res = await api.post("/auth/login", {
+    email,
+    password
+  });
 
-    const { token, role, tenantId } = res.data;
+  const { token, role, tenantId, storeSlug } = res.data; // ✅ ADD THIS
+  
+  localStorage.setItem("token", token);
+  localStorage.setItem("role", role);
+  localStorage.setItem("tenantId", tenantId);
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("role", role);
-    localStorage.setItem("tenantId", tenantId);
+  // 🔥 IMPORTANT
+if (storeSlug) {
+  localStorage.setItem("storeSlug", storeSlug);
+}
 
-    setRole(role);
-    setTenantId(tenantId);
-  };
+  setRole(role);
+  setTenantId(tenantId);
+};
 
   const logout = () => {
     localStorage.clear();

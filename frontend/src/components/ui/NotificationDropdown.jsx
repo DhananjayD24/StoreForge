@@ -25,13 +25,11 @@ export default function NotificationDropdown({ open, onClose }) {
       {/* Dropdown Panel */}
       <div className="
         absolute right-0 mt-3 w-80
-        bg-white dark:bg-gray-800
-        rounded-xl shadow-xl border
-        dark:border-gray-700 z-50
+        bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden
       ">
         {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
-          <h3 className="font-semibold">Notifications</h3>
+        <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50/50">
+          <h3 className="font-semibold text-slate-800">Notifications</h3>
 
           <button
             onClick={markAllRead}
@@ -50,10 +48,10 @@ export default function NotificationDropdown({ open, onClose }) {
           ) : (
             notifications.map((n) => (
               <div
-                key={n.id}
+                key={n.id || n._id || Math.random()}
                 className={`
-                  p-4 border-b dark:border-gray-700 text-sm
-                  ${!n.read ? "bg-blue-50 dark:bg-gray-700/40" : ""}
+                  p-4 border-b border-slate-100 text-sm transition hover:bg-slate-50
+                  ${!n.read ? "bg-blue-50/50 font-medium text-slate-900" : "text-slate-600"}
                 `}
               >
                 {n.message}

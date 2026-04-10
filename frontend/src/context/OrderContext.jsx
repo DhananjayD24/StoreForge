@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import api from "../api/api";
 
 const OrderContext = createContext();
@@ -7,19 +7,14 @@ export function OrderProvider({ children }) {
 
   const [orders, setOrders] = useState([]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
-
       const res = await api.get("/orders/tenant");
-
       setOrders(res.data);
-
     } catch (error) {
-
       console.error("Failed to fetch orders:", error);
-
     }
-  };
+  }, []);
 
   useEffect(() => {
 

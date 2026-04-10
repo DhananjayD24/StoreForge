@@ -10,6 +10,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Tenant from "../models/Tenant.js"; 
 
 // ==============================
 // Helper: Generate JWT Token
@@ -65,6 +66,7 @@ export const registerUser = async (req, res) => {
 // ==============================
 
 export const loginUser = async (req, res) => {
+  
   try {
     const { email, password } = req.body;
 
@@ -76,15 +78,25 @@ export const loginUser = async (req, res) => {
 
     // compare password with hashed password
     const isMatch = await bcrypt.compare(password, user.password);
-
+    
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
+    
 
+    // ✅ GET TENANT (STORE)
+    let storeSlug = null;
+
+    if (user.tenantId) {
+      const tenant = await Tenant.findById(user.tenantId);
+      storeSlug = tenant?.storeSlug || null;
+    }
+    
     res.json({
       message: "Login successful",
       token: generateToken(user),
       role: user.role,
       tenantId: user.tenantId,
+      storeSlug, // ✅ ADD THIS
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

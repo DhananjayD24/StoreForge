@@ -10,8 +10,6 @@ import { OrderProvider } from "./context/OrderContext";
 import { ProductProvider } from "./context/ProductContext";
 import { TenantProvider } from "./context/TenantContext";
 import { AnalyticsProvider } from "./context/AnalyticsContext";
-import { NotificationProvider } from "./context/NotificationContext";
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
@@ -22,9 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <ProductProvider>
                 <TenantProvider>
                   <AnalyticsProvider>
-                    <NotificationProvider>
-                      <App />
-                    </NotificationProvider>
+                    <App />
                   </AnalyticsProvider> 
                 </TenantProvider>
               </ProductProvider>

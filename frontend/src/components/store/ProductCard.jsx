@@ -1,84 +1,94 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
 function ProductCard({ product }) {
-
-  const [index, setIndex] = useState(0);
+  const { addToCart } = useCart();
   const { slug } = useParams();
 
-  const nextImage = () => {
-    if (index < product.images.length - 1) {
-      setIndex(index + 1);
-    }
-  };
+  const inStock = product.stock > 0;
 
-  const prevImage = () => {
-    if (index > 0) {
-      setIndex(index - 1);
-    }
+  const handleAdd = (e) => {
+    e.preventDefault();
+    if (!inStock) return;
+    addToCart({
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0],
+      quantity: 1,
+    });
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-lg transition-all overflow-hidden">
-
-      {/* Image Container */}
-      <div className="relative">
-
-        <img
-          src={product.images?.[index]}
-          alt={product.name}
-          className="h-48 w-full object-cover"
-        />
-
-        {/* Left Arrow */}
-        {index > 0 && (
-          <button
-            onClick={prevImage}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white px-2 py-1 rounded"
-          >
-            ◀
-          </button>
+    <Link
+      to={`/store/${slug}/product/${product._id}`}
+      className="group bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col animate-fade-in-up"
+    >
+      {/* Image */}
+      <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
+        {product.images?.[0] ? (
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-5xl text-slate-300">📦</div>
         )}
 
-        {/* Right Arrow */}
-        {product.images && index < product.images.length - 1 && (
-          <button
-            onClick={nextImage}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white px-2 py-1 rounded"
-          >
-            ▶
-          </button>
+        {/* Out of stock overlay */}
+        {!inStock && (
+          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+            <span className="px-3 py-1.5 bg-slate-100 text-slate-500 text-xs font-bold rounded-full border border-slate-200">
+              Out of Stock
+            </span>
+          </div>
         )}
 
+        {/* Stock badge for low stock */}
+        {inStock && product.stock <= 5 && (
+          <div className="absolute top-2 right-2">
+            <span className="px-2 py-1 bg-amber-500 text-white text-[10px] font-bold rounded-full shadow">
+              Only {product.stock} left
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Product Info */}
-      <div className="p-4 space-y-2">
+      {/* Info */}
+      <div className="p-4 flex flex-col gap-3 flex-1">
+        <div className="flex-1">
+          <h3 className="font-semibold text-slate-900 text-sm leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+              {product.description}
+            </p>
+          )}
+        </div>
 
-        <h3 className="font-semibold text-lg">
-          {product.name}
-        </h3>
-
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
-          ₹ {product.price}
-        </p>
-
-        {product.stock < 5 && (
-          <span className="inline-block text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
-            Low Stock
+        <div className="flex items-center justify-between">
+          <span className="text-base font-extrabold text-slate-900">
+            ₹{product.price?.toLocaleString("en-IN")}
           </span>
-        )}
-
-        <Link
-          to={`/store/${slug}/product/${product._id}`}
-          className="block mt-3 text-center bg-black text-white py-2 rounded-xl hover:opacity-90"
-        >
-          View Details
-        </Link>
-
+          <button
+            onClick={handleAdd}
+            disabled={!inStock}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              inStock
+                ? "bg-slate-900 hover:bg-slate-700 text-white"
+                : "bg-slate-100 text-slate-400 cursor-not-allowed"
+            }`}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Add
+          </button>
+        </div>
       </div>
-
-    </div>
+    </Link>
   );
 }
 
