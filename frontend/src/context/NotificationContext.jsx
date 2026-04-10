@@ -15,7 +15,7 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     if (!tenantId) return;
 
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_BACKEND_URL);
     
     socket.emit("join-tenant", tenantId);
 

@@ -47,11 +47,14 @@ StoreForge is an advanced, multi-tenant B2B SaaS platform that allows users to i
 
 ## ⚙️ Environment Variables
 
-To run this project locally, you will need to create a `.env` file in the `backend/` directory with the following variables:
+To run this project locally, you will need to set up Environment Secret files (`.env`) for both the backend and frontend.
+
+### Backend (`backend/.env`)
 
 ```env
 # Server Config
 PORT=5000
+CORS_ORIGIN=http://localhost:5173
 
 # Database
 MONGO_URI=your_mongodb_connection_string_here
@@ -65,7 +68,12 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-*(Note: Depending on your setup, the Frontend might require a `.env` with a variable like `VITE_API_URL=http://localhost:5000` to direct API requests.)*
+### Frontend (`frontend/.env`)
+
+```env
+# API Configuration (Points to live or local backend)
+VITE_BACKEND_URL=http://localhost:5000
+```
 
 ---
 
@@ -89,6 +97,7 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
    ```bash
    cd ../frontend
    npm install
+   # Create the .env file as instructed above
    npm run dev
    ```
 
