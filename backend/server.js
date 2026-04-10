@@ -9,6 +9,7 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import { initSocket } from "./config/socket.js";
 import { socketHandler } from "./sockets/socketHandler.js";
+import { startUptimeRobot } from "./config/uptimerobot.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -25,4 +26,9 @@ socketHandler(io);
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  
+  // Start internal UptimeRobot to keep server awake on free tiers
+  if (process.env.BACKEND_URL) {
+    startUptimeRobot(process.env.BACKEND_URL);
+  }
 });
