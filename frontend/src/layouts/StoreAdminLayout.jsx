@@ -157,7 +157,7 @@ function StoreAdminLayout() {
               <IconStore />
             </div>
             <div>
-              <p className="text-white font-bold text-sm leading-none">StoreForge</p>
+              <p className="text-white font-bold text-sm leading-none">Rent Virtual Stores</p>
               <p className="text-blue-300 text-[11px] mt-0.5 font-medium">Store Admin</p>
             </div>
           </div>
@@ -325,7 +325,7 @@ function StoreAdminLayout() {
         {/* Footer */}
         <footer className="py-4 px-6 border-t border-slate-200 bg-white">
           <p className="text-xs text-slate-400 text-center">
-            StoreForge · Store Dashboard · © 2026
+            Rent Virtual Stores · Store Dashboard · © 2026
           </p>
         </footer>
       </div>

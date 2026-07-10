@@ -130,7 +130,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-            StoreForge helps entrepreneurs create, manage and scale their own e-commerce stores effortlessly — no technical knowledge required.
+            Rent Virtual Stores helps entrepreneurs create, manage and scale their own e-commerce stores effortlessly — no technical knowledge required.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
@@ -281,7 +281,7 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Launch Your Store Today</h2>
           <p className="text-indigo-200 mb-10 text-lg">
-            Join hundreds of entrepreneurs already selling on StoreForge.
+            Join hundreds of entrepreneurs already selling on Rent Virtual Stores.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button

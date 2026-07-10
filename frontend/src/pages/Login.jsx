@@ -162,7 +162,7 @@ export default function Login() {
                 <path d="M19.5 19.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
               </svg>
             </div>
-            <span className="text-white text-2xl font-bold tracking-tight">StoreForge</span>
+            <span className="text-white text-2xl font-bold tracking-tight">Rent Virtual Stores</span>
           </div>
         </div>
 
@@ -203,7 +203,7 @@ export default function Login() {
 
         {/* Footer */}
         <p className="relative z-10 text-white/30 text-xs">
-          © 2026 StoreForge · SaaS Platform
+          © 2026 Rent Virtual Stores · SaaS Platform
         </p>
       </div>
 
@@ -221,7 +221,7 @@ export default function Login() {
                 <path d="M3.375 4.5C2.339 4.5 1.5 5.34 1.5 6.375V13.5h12V6.375c0-1.036-.84-1.875-1.875-1.875h-8.25z" />
               </svg>
             </div>
-            <span className="font-bold text-gray-900">StoreForge</span>
+            <span className="font-bold text-gray-900">Rent Virtual Stores</span>
           </div>
 
           {/* Heading */}

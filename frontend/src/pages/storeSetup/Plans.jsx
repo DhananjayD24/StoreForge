@@ -157,7 +157,7 @@ export default function Plans() {
       )}
 
       <p className="text-center text-slate-500 text-xs mt-10">
-        All plans include full access to StoreForge features. Upgrade anytime.
+        All plans include full access to Rent Virtual Stores features. Upgrade anytime.
       </p>
     </div>
   );

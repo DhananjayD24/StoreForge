@@ -100,7 +100,7 @@ export default function Register() {
                 <path d="M3.375 4.5C2.339 4.5 1.5 5.34 1.5 6.375V13.5h12V6.375c0-1.036-.84-1.875-1.875-1.875h-8.25zM13.5 15h-12v2.625c0 1.035.84 1.875 1.875 1.875h.375a3 3 0 116 0h3a.75.75 0 00.75-.75V15z" />
               </svg>
             </div>
-            <span className="text-white text-2xl font-bold">StoreForge</span>
+            <span className="text-white text-2xl font-bold">Rent Virtual Stores</span>
           </Link>
         </div>
 
@@ -111,7 +111,7 @@ export default function Register() {
               Your store is just <span className="text-blue-300">3 minutes</span> away
             </h1>
             <p className="text-white/60 mt-3 text-base leading-relaxed">
-              Join hundreds of entrepreneurs who launched their e-commerce store with StoreForge.
+              Join hundreds of entrepreneurs who launched their e-commerce store with Rent Virtual Stores.
             </p>
           </div>
           <ul className="space-y-3">
@@ -126,7 +126,7 @@ export default function Register() {
           </ul>
         </div>
 
-        <p className="relative z-10 text-white/30 text-xs">© 2026 StoreForge</p>
+        <p className="relative z-10 text-white/30 text-xs">© 2026 Rent Virtual Stores</p>
       </div>
 
       {/* ── Right form ── */}
@@ -141,7 +141,7 @@ export default function Register() {
                   <path d="M3.375 4.5C2.339 4.5 1.5 5.34 1.5 6.375V13.5h12V6.375c0-1.036-.84-1.875-1.875-1.875h-8.25z" />
                 </svg>
               </div>
-              <span className="font-bold text-slate-900">StoreForge</span>
+              <span className="font-bold text-slate-900">Rent Virtual Stores</span>
             </Link>
           </div>
 

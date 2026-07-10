@@ -130,7 +130,7 @@ function CustomerLayout() {
               {slug?.replace(/-/g, " ") || "Store"}
             </span>
           </div>
-          <p className="text-xs">Powered by <span className="text-indigo-400 font-semibold">StoreForge</span> · © {new Date().getFullYear()}</p>
+          <p className="text-xs">Powered by <span className="text-indigo-400 font-semibold">Rent Virtual Stores</span> · © {new Date().getFullYear()}</p>
         </div>
       </footer>
     </div>

@@ -41,7 +41,7 @@ export default function PublicLayout() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-sm">
               <IconLogo />
             </div>
-            <span className="font-bold text-slate-900 text-lg tracking-tight">StoreForge</span>
+            <span className="font-bold text-slate-900 text-lg tracking-tight">Rent Virtual Stores</span>
           </Link>
 
           {/* Desktop nav */}
@@ -124,7 +124,7 @@ export default function PublicLayout() {
                 <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
                   <IconLogo />
                 </div>
-                <span className="text-white font-bold">StoreForge</span>
+                <span className="text-white font-bold">Rent Virtual Stores</span>
               </div>
               <p className="text-sm leading-relaxed">
                 The modern multi-tenant SaaS platform for building and scaling e-commerce stores.
@@ -149,7 +149,7 @@ export default function PublicLayout() {
             </div>
           </div>
           <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-xs">© {new Date().getFullYear()} StoreForge. All rights reserved.</p>
+            <p className="text-xs">© {new Date().getFullYear()} Rent Virtual Stores. All rights reserved.</p>
             <p className="text-xs">Multi-Tenant SaaS E-Commerce Platform</p>
           </div>
         </div>

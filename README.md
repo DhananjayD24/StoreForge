@@ -1,6 +1,6 @@
-# StoreForge 🌐
+# Rent Virtual Stores 🌐
 
-StoreForge is an advanced, multi-tenant B2B SaaS platform that allows users to instantly launch, manage, and scale their own customized e-commerce stores. Designed with a sleek, premium UI and powered by real-time analytics, StoreForge gives store owners comprehensive tools to succeed while providing super admins full oversight of the entire ecosystem.
+Rent Virtual Stores is an advanced, multi-tenant B2B SaaS platform that allows users to instantly launch, manage, and scale their own customized e-commerce stores. Designed with a sleek, premium UI and powered by real-time analytics, Rent Virtual Stores gives store owners comprehensive tools to succeed while providing super admins full oversight of the entire ecosystem.
 
 **🚀 Live Platform Link**: [Insert Live App Link Here]  
 **🏪 Live Example Store Link**: [Insert Example Store Link Here]

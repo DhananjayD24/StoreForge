@@ -115,7 +115,7 @@ export default function CreateStore() {
                 <div className="min-w-0">
                   <p className="text-xs text-slate-500 font-medium mb-0.5">Your store URL will be:</p>
                   <p className="text-sm font-bold text-indigo-600 break-all">
-                    storeforge.com/store/<span className="text-indigo-900">{slugPreview}</span>
+                    rentvirtualstores.com/store/<span className="text-indigo-900">{slugPreview}</span>
                   </p>
                 </div>
               </div>

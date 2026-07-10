@@ -127,7 +127,7 @@ function SuperAdminLayout() {
               <IconShield />
             </div>
             <div>
-              <p className="text-white font-bold text-sm leading-none">StoreForge</p>
+              <p className="text-white font-bold text-sm leading-none">Rent Virtual Stores</p>
               <p className="text-indigo-300 text-[11px] mt-0.5 font-medium">Super Admin</p>
             </div>
           </div>
@@ -249,7 +249,7 @@ function SuperAdminLayout() {
         {/* Footer */}
         <footer className="py-4 px-6 border-t border-slate-200 bg-white">
           <p className="text-xs text-slate-400 text-center">
-            StoreForge Admin Panel · © 2026 · All rights reserved
+            Rent Virtual Stores Admin Panel · © 2026 · All rights reserved
           </p>
         </footer>
       </div>

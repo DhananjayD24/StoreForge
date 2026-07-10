@@ -38,7 +38,7 @@ app.use("/api/auth", authRoutes);
 
 // health check
 app.get("/", (req, res) => {
-  res.send("StoreForge API Running 🚀");
+  res.send("Rent Virtual Stores API Running 🚀");
 });
 
 app.use("/api/tenants", tenantRoutes);
